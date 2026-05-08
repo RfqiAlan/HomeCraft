@@ -63,36 +63,18 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/img_search" />
 
-            <!-- Categories Horizontal Scroll -->
-            <HorizontalScrollView
-                android:id="@+id/sv_categories"
+            <!-- Categories RecyclerView -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_categories"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:paddingStart="24dp"
                 android:paddingEnd="24dp"
                 android:clipToPadding="false"
-                android:scrollbars="none"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_beautiful">
-
-                <LinearLayout
-                    android:id="@+id/ll_categories_container"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    
-                    <include layout="@layout/item_category" />
-                    
-                    <!-- Dummy items to represent other categories, made slightly transparent for unselected state visual -->
-                    <include layout="@layout/item_category" android:layout_width="wrap_content" android:layout_height="wrap_content" android:alpha="0.5"/>
-                    <include layout="@layout/item_category" android:layout_width="wrap_content" android:layout_height="wrap_content" android:alpha="0.5"/>
-                    <include layout="@layout/item_category" android:layout_width="wrap_content" android:layout_height="wrap_content" android:alpha="0.5"/>
-
-                </LinearLayout>
-
-            </HorizontalScrollView>
+                app:layout_constraintTop_toBottomOf="@id/tv_beautiful" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_products"
@@ -106,7 +88,7 @@
                 tools:itemCount="4"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/sv_categories"
+                app:layout_constraintTop_toBottomOf="@id/rv_categories"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
             <ProgressBar
@@ -117,7 +99,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/sv_categories" />
+                app:layout_constraintTop_toBottomOf="@id/rv_categories" />
 
             <TextView
                 android:id="@+id/tv_error"
@@ -127,7 +109,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/sv_categories" />
+                app:layout_constraintTop_toBottomOf="@id/rv_categories" />
 
             <Button
                 android:id="@+id/btn_refresh"

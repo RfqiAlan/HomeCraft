@@ -325,6 +325,8 @@ public class DetailActivity extends AppCompatActivity {
                             : R.drawable.ic_favorite_border);
                 }
                 
+                if (isFinishing() || isDestroyed()) return;
+                
                 int dialogType = isFavorite ? com.example.furniture.utils.SweetDialog.TYPE_SUCCESS : com.example.furniture.utils.SweetDialog.TYPE_INFO;
                 String msg = isFavorite ? "Produk ditambahkan ke favorit ❤" : "Produk dihapus dari favorit";
                 
@@ -346,6 +348,7 @@ public class DetailActivity extends AppCompatActivity {
                 cartDao.addToCart(currentProduct);
             }
             runOnUiThread(() -> {
+                if (isFinishing() || isDestroyed()) return;
                 new com.example.furniture.utils.SweetDialog(this, com.example.furniture.utils.SweetDialog.TYPE_SUCCESS)
                         .setTitleText("Berhasil")
                         .setContentText(currentProduct.getName() + " (x" + qty + ") ditambahkan ke cart 🛒")

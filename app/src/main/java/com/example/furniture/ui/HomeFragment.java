@@ -18,15 +18,21 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.furniture.R;
+import com.example.furniture.adapter.CategoryAdapter;
 import com.example.furniture.adapter.ProductAdapter;
 import com.example.furniture.api.ApiService;
 import com.example.furniture.api.RetrofitClient;
 import com.example.furniture.database.DatabaseHelper;
 import com.example.furniture.database.ProductDao;
+import com.example.furniture.model.Category;
+import com.example.furniture.model.CategoryResponse;
 import com.example.furniture.model.Product;
 import com.example.furniture.model.ProductResponse;
 import com.example.furniture.utils.Constants;
 import com.example.furniture.utils.NetworkUtils;
+import com.example.furniture.utils.SweetDialog;
+
+import java.util.ArrayList;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -40,11 +46,12 @@ import retrofit2.Response;
  * HomeFragment — menampilkan daftar produk furniture.
  * Mengambil data dari API, menyimpan ke SQLite, dan fallback ke cache saat offline.
  */
-public class HomeFragment extends Fragment implements ProductAdapter.OnProductClickListener {
+public class HomeFragment extends Fragment implements ProductAdapter.OnProductClickListener, CategoryAdapter.OnCategoryClickListener {
 
     // ─── Views ───────────────────────────────────────────────────────────────────
 
     private RecyclerView recyclerView;
+    private RecyclerView rvCategories;
     private ProgressBar progressBar;
     private TextView tvError;
     private Button btnRefresh;
@@ -53,7 +60,9 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
     // ─── Data ─────────────────────────────────────────────────────────────────────
 
     private ProductAdapter productAdapter;
+    private CategoryAdapter categoryAdapter;
     private ProductDao productDao;
+    private String currentCategoryId = Constants.FURNITURE_CATEGORY_ID;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     // ─── Lifecycle ───────────────────────────────────────────────────────────────
@@ -70,6 +79,7 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initView(view);
+        loadCategories();
         loadProducts();
     }
 
@@ -83,10 +93,18 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
 
     private void initView(View view) {
         recyclerView  = view.findViewById(R.id.rv_products);
+        rvCategories  = view.findViewById(R.id.rv_categories);
         progressBar   = view.findViewById(R.id.progress_bar);
         tvError       = view.findViewById(R.id.tv_error);
         btnRefresh    = view.findViewById(R.id.btn_refresh);
         swipeRefresh  = view.findViewById(R.id.swipe_refresh);
+
+        // Setup Categories RecyclerView
+        if (rvCategories != null) {
+            categoryAdapter = new CategoryAdapter(requireContext(), this);
+            rvCategories.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(requireContext(), androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL, false));
+            rvCategories.setAdapter(categoryAdapter);
+        }
 
         // Setup RecyclerView dengan GridLayout 2 kolom
         productAdapter = new ProductAdapter(requireContext(), this);
@@ -98,12 +116,18 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
 
         // Tombol refresh manual
         if (btnRefresh != null) {
-            btnRefresh.setOnClickListener(v -> loadProducts());
+            btnRefresh.setOnClickListener(v -> {
+                loadCategories();
+                loadProducts();
+            });
         }
 
         // Swipe to refresh
         if (swipeRefresh != null) {
-            swipeRefresh.setOnRefreshListener(this::loadProductsFromApi);
+            swipeRefresh.setOnRefreshListener(() -> {
+                loadCategories();
+                loadProductsFromApi();
+            });
         }
     }
 
@@ -120,6 +144,58 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
         }
     }
 
+    private void loadCategories() {
+        if (!NetworkUtils.isInternetAvailable(requireContext())) return;
+
+        ApiService apiService = RetrofitClient.getApiService();
+        Call<CategoryResponse> call = apiService.getCategories();
+        call.enqueue(new Callback<CategoryResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<CategoryResponse> call, @NonNull Response<CategoryResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().getPayload() != null) {
+                    List<Category> allCategories = response.body().getPayload().getCategories();
+                    List<Category> furnitureSubcategories = filterFurnitureCategories(allCategories);
+                    
+                    if (!furnitureSubcategories.isEmpty()) {
+                        // Tambahkan pseudo-kategori "All" di awal
+                        Category allCategory = new Category();
+                        allCategory.setId(Constants.FURNITURE_CATEGORY_ID);
+                        allCategory.setName("All");
+                        furnitureSubcategories.add(0, allCategory);
+                        
+                        if (categoryAdapter != null) {
+                            categoryAdapter.setCategories(furnitureSubcategories);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CategoryResponse> call, @NonNull Throwable t) {
+                // Ignore failure for categories
+            }
+        });
+    }
+
+    private List<Category> filterFurnitureCategories(List<Category> categories) {
+        List<Category> result = new ArrayList<>();
+        if (categories == null) return result;
+        for (Category cat : categories) {
+            if (Constants.FURNITURE_CATEGORY_ID.equals(cat.getId()) ||
+                    Constants.FURNITURE_CATEGORY_NAME.equalsIgnoreCase(cat.getName())) {
+                if (cat.getSubCategories() != null) {
+                    result.addAll(cat.getSubCategories());
+                }
+                return result;
+            }
+            if (cat.getSubCategories() != null) {
+                List<Category> found = filterFurnitureCategories(cat.getSubCategories());
+                if (!found.isEmpty()) return found;
+            }
+        }
+        return result;
+    }
+
     /**
      * Ambil produk dari API Retrofit.
      */
@@ -128,7 +204,7 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
 
         ApiService apiService = RetrofitClient.getApiService();
         Call<ProductResponse> call = apiService.getProducts(
-                Constants.FURNITURE_CATEGORY_ID,
+                currentCategoryId,
                 Constants.DEFAULT_LIMIT,
                 Constants.DEFAULT_OFFSET,
                 Constants.DEFAULT_SORT_ID);
@@ -149,20 +225,34 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
                         productAdapter.setProducts(products);
                         showContent();
 
-                        // Simpan ke SQLite di background thread
-                        saveProductsToLocal(products);
+                        // Simpan ke SQLite di background thread hanya jika ini "All" / kategori utama
+                        if (currentCategoryId.equals(Constants.FURNITURE_CATEGORY_ID)) {
+                            saveProductsToLocal(products);
+                        }
                     } else {
-                        loadProductsFromLocal();
+                        if (currentCategoryId.equals(Constants.FURNITURE_CATEGORY_ID)) {
+                            loadProductsFromLocal();
+                        } else {
+                            showError("Tidak ada produk di kategori ini.");
+                        }
                     }
                 } else {
-                    loadProductsFromLocal();
+                    if (currentCategoryId.equals(Constants.FURNITURE_CATEGORY_ID)) {
+                        loadProductsFromLocal();
+                    } else {
+                        showError("Gagal memuat produk. Coba lagi.");
+                    }
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<ProductResponse> call, @NonNull Throwable t) {
                 hideLoading();
-                loadProductsFromLocal();
+                if (currentCategoryId.equals(Constants.FURNITURE_CATEGORY_ID)) {
+                    loadProductsFromLocal();
+                } else {
+                    showError("Gagal terhubung ke server.");
+                }
             }
         });
     }
@@ -235,23 +325,33 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
 
     @Override
     public void onFavoriteClick(Product product) {
-        // Simpan ke favorit di background thread
         executor.execute(() -> {
             com.example.furniture.database.FavoriteDao favoriteDao =
                     new com.example.furniture.database.FavoriteDao(
                             DatabaseHelper.getInstance(requireContext()));
 
-            if (favoriteDao.isFavorite(product.getProductId())) {
+            boolean isFav = favoriteDao.isFavorite(product.getProductId());
+            if (isFav) {
                 favoriteDao.removeFavorite(product.getProductId());
-                requireActivity().runOnUiThread(() ->
-                        Toast.makeText(requireContext(),
-                                "Dihapus dari favorit", Toast.LENGTH_SHORT).show());
             } else {
                 favoriteDao.addFavorite(product);
-                requireActivity().runOnUiThread(() ->
-                        Toast.makeText(requireContext(),
-                                "Ditambahkan ke favorit ❤", Toast.LENGTH_SHORT).show());
             }
+            
+            requireActivity().runOnUiThread(() -> {
+                if (!isAdded()) return;
+                int dialogType = isFav ? SweetDialog.TYPE_INFO : SweetDialog.TYPE_SUCCESS;
+                String msg = isFav ? "Produk dihapus dari favorit" : "Produk ditambahkan ke favorit ❤";
+                new SweetDialog(requireContext(), dialogType)
+                        .setTitleText("Favorit")
+                        .setContentText(msg)
+                        .show();
+            });
         });
+    }
+
+    @Override
+    public void onCategoryClick(Category category) {
+        currentCategoryId = category.getId();
+        loadProducts(); // Load products based on the new category ID
     }
 }
