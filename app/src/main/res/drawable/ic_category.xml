@@ -7,11 +7,9 @@
     <path
         android:fillColor="#9E9E9E"
         android:pathData="M12,2l-5.5,9h11z" />
-    <circle
+    <path
         android:fillColor="#9E9E9E"
-        android:cx="17.5"
-        android:cy="17.5"
-        android:r="4.5" />
+        android:pathData="M17.5,13a4.5,4.5 0 1,0 0,9a4.5,4.5 0 1,0 0,-9" />
     <path
         android:fillColor="#9E9E9E"
         android:pathData="M3,13.5h8v8H3z" />

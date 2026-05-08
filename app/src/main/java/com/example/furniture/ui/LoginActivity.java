@@ -130,7 +130,13 @@ public class LoginActivity extends AppCompatActivity {
                             "Selamat datang, " + user.getName() + "!",
                             Toast.LENGTH_SHORT).show();
 
-                    // Kembali ke CheckoutActivity dengan result OK
+                    // Jika dipanggil dari flow Checkout, kirim RESULT_OK saja
+                    // Jika dipanggil dari Boarding (tidak ada caller), buka MainActivity
+                    if (isTaskRoot()) {
+                        Intent intent = new Intent(this, MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                    }
                     setResult(RESULT_OK);
                     finish();
                 } else {
@@ -146,8 +152,13 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        // Jika register berhasil → otomatis login
+        // Jika register berhasil → langsung buka MainActivity
         if (requestCode == 100 && resultCode == RESULT_OK) {
+            if (isTaskRoot()) {
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            }
             setResult(RESULT_OK);
             finish();
         }

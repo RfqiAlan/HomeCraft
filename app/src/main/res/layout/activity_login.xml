@@ -33,7 +33,7 @@
                 android:layout_height="72dp"
                 android:layout_marginHorizontal="16dp"
                 android:background="@drawable/bg_logo_circle"
-                android:src="@mipmap/ic_launcher"
+                android:src="@drawable/logo"
                 android:padding="12dp"
                 android:scaleType="centerInside"
                 android:contentDescription="FurniSpace Logo" />

@@ -1,6 +1,11 @@
 package com.example.furniture.api;
 
+import com.example.furniture.model.Product;
 import com.example.furniture.utils.Constants;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -9,53 +14,61 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
- * Singleton Retrofit client dengan OkHttp Interceptor untuk header RapidAPI.
+ * Singleton Retrofit client untuk Kohls API (RapidAPI).
+ * - Menyisipkan header x-rapidapi-key & x-rapidapi-host via interceptor
+ * - Menggunakan custom Gson dengan {@link ProductDeserializer}
  */
 public class RetrofitClient {
 
-    private static Retrofit retrofit = null;
+    private static Retrofit retrofit;
 
     /**
-     * Mengembalikan instance ApiService yang siap digunakan.
-     * Singleton: hanya dibuat satu kali.
+     * Mengembalikan instance ApiService yang siap digunakan (singleton).
      */
     public static ApiService getApiService() {
         if (retrofit == null) {
             retrofit = new Retrofit.Builder()
                     .baseUrl(Constants.BASE_URL)
                     .client(buildOkHttpClient())
-                    .addConverterFactory(GsonConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create(buildGson()))
                     .build();
         }
         return retrofit.create(ApiService.class);
     }
 
-    /**
-     * Membuat OkHttpClient dengan:
-     * - RapidAPI header interceptor (x-rapidapi-key, x-rapidapi-host)
-     * - Logging interceptor untuk debug
-     */
+    // ─── Gson ────────────────────────────────────────────────────────────────────
+
+    private static Gson buildGson() {
+        return new GsonBuilder()
+                .registerTypeAdapter(Product.class, new ProductDeserializer())
+                .setLenient()
+                .create();
+    }
+
+    // ─── OkHttp ──────────────────────────────────────────────────────────────────
+
     private static OkHttpClient buildOkHttpClient() {
-        // Logging interceptor — tampilkan request/response di Logcat saat debug
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
 
         return new OkHttpClient.Builder()
-                // Header RapidAPI
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                // Inject header RapidAPI untuk semua request
                 .addInterceptor(chain -> {
                     Request original = chain.request();
                     Request request = original.newBuilder()
-                            .addHeader("x-rapidapi-key", Constants.API_KEY)
-                            .addHeader("x-rapidapi-host", Constants.API_HOST)
+                            .header("x-rapidapi-key", Constants.API_KEY)
+                            .header("x-rapidapi-host", Constants.API_HOST)
+                            .header("Content-Type", "application/json")
                             .method(original.method(), original.body())
                             .build();
                     return chain.proceed(request);
                 })
-                // Logging (aktif saat development)
                 .addInterceptor(loggingInterceptor)
                 .build();
     }
 
-    // Prevent instantiation
     private RetrofitClient() {}
 }

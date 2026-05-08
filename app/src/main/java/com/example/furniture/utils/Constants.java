@@ -1,16 +1,18 @@
 package com.example.furniture.utils;
 
 /**
- * Konstanta global untuk seluruh aplikasi FurniSpace.
- * CATATAN: Ganti BASE_URL, API_KEY, dan API_HOST sesuai endpoint RapidAPI yang digunakan.
+ * Konstanta global untuk seluruh aplikasi HomeCraft.
+ * Base URL, host, dan key mengarah ke Kohls API (RapidAPI by Api Dojo).
  */
 public class Constants {
 
-    // ─── API Configuration ───────────────────────────────────────────────────────
-    // PENTING: Isi dengan base URL, API key, dan host dari RapidAPI kamu
-    public static final String BASE_URL = "https://apidojo-walmart-labs-v1.p.rapidapi.com/";
-    public static final String API_KEY  = "YOUR_RAPIDAPI_KEY_HERE";
-    public static final String API_HOST = "apidojo-walmart-labs-v1.p.rapidapi.com";
+    // ─── API Configuration (Kohls via RapidAPI) ──────────────────────────────────
+    public static final String BASE_URL = "https://kohls.p.rapidapi.com/";
+    public static final String API_HOST = "kohls.p.rapidapi.com";
+
+    // PENTING: Key RapidAPI. Jangan commit key asli ke repo publik.
+    public static final String API_KEY  =
+            "aa06c32967msh6c6dee9e1ada3e4p125fcajsn142b7625bed6";
 
     // ─── Intent Extra Keys ───────────────────────────────────────────────────────
     public static final String EXTRA_PRODUCT_ID = "product_id";
@@ -34,9 +36,23 @@ public class Constants {
     public static final String THEME_LIGHT     = "light";
 
     // ─── Category ────────────────────────────────────────────────────────────────
-    // ID kategori Furniture dari API (sesuai data RapidAPI)
-    public static final String FURNITURE_CATEGORY_ID   = "1350311459149";
+    // ID kategori "Furniture" hasil pencarian pada endpoint categories/list Kohls.
+    public static final String FURNITURE_CATEGORY_ID   = "1381075460323";
     public static final String FURNITURE_CATEGORY_NAME = "Furniture";
+
+    // ─── Products/list defaults ─────────────────────────────────────────────────
+    public static final int DEFAULT_LIMIT    = 24;
+    public static final int DEFAULT_OFFSET   = 0;
+    public static final int DEFAULT_SORT_ID  = 0;
+
+    // ─── Reviews / QnAs defaults ────────────────────────────────────────────────
+    public static final int    DEFAULT_REVIEW_LIMIT = 10;
+    public static final String DEFAULT_REVIEW_SORT  = "SubmissionTime:desc";
+
+    // ─── Stores defaults ────────────────────────────────────────────────────────
+    public static final double DEFAULT_STORE_LATITUDE  = 33.9733;
+    public static final double DEFAULT_STORE_LONGITUDE = -118.2487;
+    public static final int    DEFAULT_STORE_RADIUS    = 25;
 
     // ─── Payment Methods ─────────────────────────────────────────────────────────
     public static final String[] PAYMENT_METHODS = {

@@ -10,6 +10,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
@@ -160,10 +161,9 @@ public class DetailActivity extends AppCompatActivity {
             public void onResponse(@NonNull Call<ProductDetailResponse> call,
                                    @NonNull Response<ProductDetailResponse> response) {
                 hideLoading();
-                if (response.isSuccessful() && response.body() != null &&
-                        response.body().getPayload() != null) {
+                if (response.isSuccessful() && response.body() != null) {
 
-                    currentProduct = response.body().getPayload().getProduct();
+                    currentProduct = response.body().getProduct();
                     if (currentProduct != null) {
                         showProductDetail(currentProduct);
                         updateFavoriteStatus();

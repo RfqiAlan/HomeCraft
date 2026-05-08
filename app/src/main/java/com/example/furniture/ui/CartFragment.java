@@ -117,7 +117,7 @@ public class CartFragment extends Fragment implements CartAdapter.OnCartActionLi
     private void calculateTotal(double total) {
         if (tvTotal != null) {
             NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("en", "US"));
-            tvTotal.setText("Total: " + nf.format(total));
+            tvTotal.setText(nf.format(total));
         }
     }
 

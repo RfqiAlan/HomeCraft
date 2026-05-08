@@ -128,7 +128,10 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
 
         ApiService apiService = RetrofitClient.getApiService();
         Call<ProductResponse> call = apiService.getProducts(
-                Constants.FURNITURE_CATEGORY_ID, 1);
+                Constants.FURNITURE_CATEGORY_ID,
+                Constants.DEFAULT_LIMIT,
+                Constants.DEFAULT_OFFSET,
+                Constants.DEFAULT_SORT_ID);
 
         call.enqueue(new Callback<ProductResponse>() {
             @Override

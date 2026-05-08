@@ -188,7 +188,10 @@ public class CategoryFragment extends Fragment
         showLoading();
         ApiService apiService = RetrofitClient.getApiService();
         Call<com.example.furniture.model.ProductResponse> call =
-                apiService.getProducts(category.getId(), 1);
+                apiService.getProducts(category.getId(),
+                        Constants.DEFAULT_LIMIT,
+                        Constants.DEFAULT_OFFSET,
+                        Constants.DEFAULT_SORT_ID);
 
         call.enqueue(new Callback<com.example.furniture.model.ProductResponse>() {
             @Override
