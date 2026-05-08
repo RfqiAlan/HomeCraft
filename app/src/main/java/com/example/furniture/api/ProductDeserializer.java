@@ -38,19 +38,29 @@ public class ProductDeserializer implements JsonDeserializer<Product> {
         product.setProductId(optString(obj, "webID"));
         product.setName(optString(obj, "productTitle"));
 
-        // ─── Image URL ──────────────────────────────────────────────────────────
+        // ─── Image URLs ─────────────────────────────────────────────────────────
         // products/list  → image: { url, width, height }
         // products/detail → images: [ { url, ... }, ... ]
         String imageUrl = null;
+        java.util.List<String> imageUrls = new java.util.ArrayList<>();
+
         if (obj.has("image") && obj.get("image").isJsonObject()) {
             imageUrl = optString(obj.getAsJsonObject("image"), "url");
+            if (imageUrl != null) imageUrls.add(imageUrl);
         } else if (obj.has("images") && obj.get("images").isJsonArray()) {
             JsonArray images = obj.getAsJsonArray("images");
-            if (images.size() > 0 && images.get(0).isJsonObject()) {
-                imageUrl = optString(images.get(0).getAsJsonObject(), "url");
+            for (int i = 0; i < images.size(); i++) {
+                if (images.get(i).isJsonObject()) {
+                    String url = optString(images.get(i).getAsJsonObject(), "url");
+                    if (url != null && !url.isEmpty()) {
+                        imageUrls.add(url);
+                        if (imageUrl == null) imageUrl = url; // gunakan foto pertama sebagai thumbnail
+                    }
+                }
             }
         }
         product.setImageUrl(imageUrl);
+        product.setImageUrls(imageUrls);
 
         // ─── Price ──────────────────────────────────────────────────────────────
         // Prefer salePrice.minPrice; fallback ke regularPrice.minPrice.

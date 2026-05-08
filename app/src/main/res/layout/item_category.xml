@@ -11,7 +11,7 @@
         android:id="@+id/fl_category_icon"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:background="@drawable/bg_category_selected">
+        android:background="@drawable/bg_category_unselected">
         
         <ImageView
             android:id="@+id/img_category_icon"

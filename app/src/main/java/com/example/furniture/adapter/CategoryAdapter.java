@@ -4,10 +4,12 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.furniture.R;
@@ -33,6 +35,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     private final Context context;
     private List<Category> categoryList;
     private OnCategoryClickListener listener;
+    private int selectedPosition = -1;
 
     // ─── Constructor ────────────────────────────────────────────────────────────
 
@@ -46,6 +49,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
     public void setCategories(List<Category> categories) {
         this.categoryList = categories != null ? categories : new ArrayList<>();
+        selectedPosition = -1;
         notifyDataSetChanged();
     }
 
@@ -62,7 +66,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     @Override
     public void onBindViewHolder(@NonNull CategoryViewHolder holder, int position) {
         Category category = categoryList.get(position);
-        holder.bind(category);
+        holder.bind(category, position == selectedPosition);
     }
 
     @Override
@@ -76,18 +80,41 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
         private final TextView tvCategoryName;
         private final ImageView imgCategoryIcon;
+        private final FrameLayout flCategoryIcon;
 
         CategoryViewHolder(@NonNull View itemView) {
             super(itemView);
             tvCategoryName  = itemView.findViewById(R.id.tv_category_name);
             imgCategoryIcon = itemView.findViewById(R.id.img_category_icon);
+            flCategoryIcon  = itemView.findViewById(R.id.fl_category_icon);
         }
 
-        void bind(Category category) {
+        void bind(Category category, boolean isSelected) {
             tvCategoryName.setText(category.getName());
+
+            // Update background & icon tint berdasarkan state
+            if (isSelected) {
+                flCategoryIcon.setBackground(
+                        ContextCompat.getDrawable(context, R.drawable.bg_category_selected));
+                imgCategoryIcon.setColorFilter(
+                        ContextCompat.getColor(context, android.R.color.white));
+                tvCategoryName.setTextColor(
+                        ContextCompat.getColor(context, android.R.color.black));
+            } else {
+                flCategoryIcon.setBackground(
+                        ContextCompat.getDrawable(context, R.drawable.bg_category_unselected));
+                imgCategoryIcon.setColorFilter(
+                        ContextCompat.getColor(context, android.R.color.darker_gray));
+                tvCategoryName.setTextColor(
+                        ContextCompat.getColor(context, android.R.color.darker_gray));
+            }
 
             // Klik item kategori
             itemView.setOnClickListener(v -> {
+                int prevSelected = selectedPosition;
+                selectedPosition = getAdapterPosition();
+                notifyItemChanged(prevSelected);
+                notifyItemChanged(selectedPosition);
                 if (listener != null) listener.onCategoryClick(category);
             });
         }

@@ -58,6 +58,7 @@ dependencies {
     implementation libs.recyclerview
     implementation libs.fragment
     implementation libs.swiperefreshlayout
+    implementation libs.viewpager2
 
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
