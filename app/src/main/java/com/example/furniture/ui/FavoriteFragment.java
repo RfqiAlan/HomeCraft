@@ -64,8 +64,8 @@ public class FavoriteFragment extends Fragment implements FavoriteAdapter.OnFavo
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onDestroy() {
+        super.onDestroy();
         executor.shutdown();
     }
 

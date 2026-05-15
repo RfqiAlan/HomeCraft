@@ -69,8 +69,8 @@ public class CartFragment extends Fragment implements CartAdapter.OnCartActionLi
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onDestroy() {
+        super.onDestroy();
         executor.shutdown();
     }
 

@@ -95,8 +95,8 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onDestroy() {
+        super.onDestroy();
         executor.shutdown();
     }
 
