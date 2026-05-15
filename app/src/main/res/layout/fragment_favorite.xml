@@ -7,40 +7,19 @@
     android:background="@color/white"
     tools:context=".ui.FavoriteFragment">
 
-    <!-- Top App Bar Area -->
-    <ImageView
-        android:id="@+id/img_search"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
-        android:src="@drawable/ic_search"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <TextView
         android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
         android:text="Favorites"
         android:textColor="#212121"
         android:textSize="18sp"
         android:textStyle="bold"
         android:fontFamily="serif"
-        app:layout_constraintBottom_toBottomOf="@id/img_search"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/img_search" />
-
-    <ImageView
-        android:id="@+id/img_cart"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="24dp"
-        android:src="@drawable/ic_cart"
-        app:layout_constraintBottom_toBottomOf="@id/img_search"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/img_search" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
@@ -55,7 +34,7 @@
         app:layout_constraintBottom_toTopOf="@id/btn_add_all"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/img_search" />
+        app:layout_constraintTop_toBottomOf="@id/tv_title" />
 
     <!-- Empty State -->
     <TextView
