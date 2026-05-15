@@ -170,21 +170,65 @@ public class SettingsFragment extends Fragment {
     }
     
     private void showEditAddressDialog() {
-        android.widget.EditText input = new android.widget.EditText(requireContext());
-        if (tvCurrentAddress != null && !tvCurrentAddress.getText().toString().equals("Belum diatur")) {
-            input.setText(tvCurrentAddress.getText().toString());
-        }
-        input.setHint("Masukkan alamat pengiriman");
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_edit_address, null);
+        
+        com.google.android.material.textfield.TextInputEditText etStreet = dialogView.findViewById(R.id.et_street);
+        com.google.android.material.textfield.TextInputEditText etCity = dialogView.findViewById(R.id.et_city);
+        com.google.android.material.textfield.TextInputEditText etProvince = dialogView.findViewById(R.id.et_province);
+        com.google.android.material.textfield.TextInputEditText etPostalCode = dialogView.findViewById(R.id.et_postal_code);
+        com.google.android.material.textfield.TextInputEditText etCountry = dialogView.findViewById(R.id.et_country);
+        
+        com.google.android.material.button.MaterialButton btnCancel = dialogView.findViewById(R.id.btn_cancel_address);
+        com.google.android.material.button.MaterialButton btnSave = dialogView.findViewById(R.id.btn_save_address);
 
-        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                .setTitle("Edit Alamat")
-                .setView(input)
-                .setPositiveButton("Simpan", (dialog, which) -> {
-                    String newAddress = input.getText().toString().trim();
-                    saveAddressToDb(newAddress);
-                })
-                .setNegativeButton("Batal", null)
-                .show();
+        // Parse existing address
+        if (tvCurrentAddress != null) {
+            String current = tvCurrentAddress.getText().toString();
+            if (!current.equals("Belum diatur") && !current.isEmpty()) {
+                String[] parts = current.split(", ");
+                if (parts.length >= 1) etStreet.setText(parts[0]);
+                if (parts.length >= 2) etCity.setText(parts[1]);
+                if (parts.length >= 3) etProvince.setText(parts[2]);
+                if (parts.length >= 4) etPostalCode.setText(parts[3]);
+                if (parts.length >= 5) {
+                    StringBuilder country = new StringBuilder();
+                    for(int i = 4; i < parts.length; i++) {
+                        country.append(parts[i]).append(i == parts.length - 1 ? "" : ", ");
+                    }
+                    etCountry.setText(country.toString());
+                }
+            }
+        }
+
+        androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setView(dialogView)
+                .create();
+                
+        // Style dialog to be transparent so our layout corners show (if any)
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+        btnSave.setOnClickListener(v -> {
+            StringBuilder sb = new StringBuilder();
+            String street = etStreet.getText().toString().trim();
+            String city = etCity.getText().toString().trim();
+            String province = etProvince.getText().toString().trim();
+            String postal = etPostalCode.getText().toString().trim();
+            String country = etCountry.getText().toString().trim();
+            
+            if (!street.isEmpty()) sb.append(street);
+            if (!city.isEmpty()) sb.append(sb.length() > 0 ? ", " : "").append(city);
+            if (!province.isEmpty()) sb.append(sb.length() > 0 ? ", " : "").append(province);
+            if (!postal.isEmpty()) sb.append(sb.length() > 0 ? ", " : "").append(postal);
+            if (!country.isEmpty()) sb.append(sb.length() > 0 ? ", " : "").append(country);
+
+            saveAddressToDb(sb.toString());
+            dialog.dismiss();
+        });
+
+        dialog.show();
     }
     
     private void saveAddressToDb(String newAddress) {
