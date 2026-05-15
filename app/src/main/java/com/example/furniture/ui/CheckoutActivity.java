@@ -1,6 +1,10 @@
 package com.example.furniture.ui;
 
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.nfc.NfcAdapter;
+import android.nfc.NfcManager;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -11,7 +15,9 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -71,6 +77,11 @@ public class CheckoutActivity extends AppCompatActivity {
     private User currentUser;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
+    // ─── NFC ──────────────────────────────────────────────────────────────────────
+    private NfcAdapter nfcAdapter;
+    private PendingIntent nfcPendingIntent;
+    private AlertDialog nfcWaitingDialog;
+
     // ─── Lifecycle ───────────────────────────────────────────────────────────────
 
     @Override
@@ -84,6 +95,7 @@ public class CheckoutActivity extends AppCompatActivity {
         }
 
         initView();
+        initNfc();
 
         // ─── Cek login sebelum lanjut ──────────────────────────────────────────
         if (!sessionManager.isLoggedIn()) {
@@ -94,9 +106,42 @@ public class CheckoutActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        // Aktifkan NFC foreground dispatch agar activity ini prioritas terima intent NFC
+        if (nfcAdapter != null && nfcAdapter.isEnabled()) {
+            nfcAdapter.enableForegroundDispatch(this, nfcPendingIntent, null, null);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Matikan NFC foreground dispatch saat activity tidak aktif
+        if (nfcAdapter != null) {
+            nfcAdapter.disableForegroundDispatch(this);
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        // Dipanggil saat NFC tag/kartu ditempel
+        String action = intent.getAction();
+        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)
+                || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
+                || NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
+            handleNfcTap();
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         executor.shutdown();
+        if (nfcWaitingDialog != null && nfcWaitingDialog.isShowing()) {
+            nfcWaitingDialog.dismiss();
+        }
     }
 
     @Override
@@ -147,6 +192,83 @@ public class CheckoutActivity extends AppCompatActivity {
             rb.setPadding(8, 16, 8, 16);
             rgPaymentMethod.addView(rb);
         }
+
+        // Saat NFC Payment dipilih, tampilkan panduan
+        rgPaymentMethod.setOnCheckedChangeListener((group, checkedId) -> {
+            RadioButton selected = group.findViewById(checkedId);
+            if (selected != null && "NFC Payment".equals(selected.getText().toString())) {
+                showNfcGuide();
+            }
+        });
+    }
+
+    // ─── NFC ─────────────────────────────────────────────────────────────────────
+
+    /**
+     * Inisialisasi NfcAdapter dan PendingIntent untuk foreground dispatch.
+     */
+    private void initNfc() {
+        NfcManager nfcManager = (NfcManager) getSystemService(NFC_SERVICE);
+        if (nfcManager != null) {
+            nfcAdapter = nfcManager.getDefaultAdapter();
+        }
+
+        Intent nfcIntent = new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        int flags = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S
+                ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
+                : PendingIntent.FLAG_UPDATE_CURRENT;
+        nfcPendingIntent = PendingIntent.getActivity(this, 0, nfcIntent, flags);
+    }
+
+    /**
+     * Tampilkan informasi panduan NFC ketika metode NFC Payment dipilih.
+     */
+    private void showNfcGuide() {
+        if (nfcAdapter == null) {
+            new AlertDialog.Builder(this)
+                    .setTitle("NFC Tidak Tersedia")
+                    .setMessage("Perangkat ini tidak mendukung NFC. Silakan pilih metode pembayaran lain.")
+                    .setPositiveButton("OK", null)
+                    .show();
+            return;
+        }
+        if (!nfcAdapter.isEnabled()) {
+            new AlertDialog.Builder(this)
+                    .setTitle("NFC Tidak Aktif")
+                    .setMessage("Aktifkan NFC di pengaturan perangkat untuk menggunakan metode pembayaran ini.")
+                    .setPositiveButton("Buka Pengaturan", (d, w) -> startActivity(new Intent(android.provider.Settings.ACTION_NFC_SETTINGS)))
+                    .setNegativeButton("Batal", null)
+                    .show();
+            return;
+        }
+        Toast.makeText(this, "✅ NFC aktif! Tap kartu saat menekan Bayar.", Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Tampilkan dialog menunggu tap NFC, lalu proses order.
+     */
+    private void showNfcWaitingDialog() {
+        nfcWaitingDialog = new AlertDialog.Builder(this)
+                .setTitle("💳 NFC Payment")
+                .setMessage("Tempelkan kartu atau perangkat NFC Anda ke belakang ponsel...")
+                .setCancelable(true)
+                .setNegativeButton("Batal", (d, w) -> d.dismiss())
+                .create();
+        nfcWaitingDialog.show();
+    }
+
+    /**
+     * Dipanggil saat NFC tag terdeteksi di onNewIntent.
+     * Tutup dialog tunggu dan proses order.
+     */
+    private void handleNfcTap() {
+        if (nfcWaitingDialog != null && nfcWaitingDialog.isShowing()) {
+            nfcWaitingDialog.dismiss();
+        }
+        // Validasi form terlebih dahulu sebelum proses
+        if (!validateForm()) return;
+        Toast.makeText(this, "✅ Kartu terdeteksi! Memproses pembayaran...", Toast.LENGTH_SHORT).show();
+        processOrder();
     }
 
     // ─── Login Redirect ──────────────────────────────────────────────────────────
@@ -284,18 +406,33 @@ public class CheckoutActivity extends AppCompatActivity {
         return true;
     }
 
-    /**
-     * Proses order: simpan ke SQLite, update profil user, hapus cart.
-     */
     private void placeOrder() {
         if (!validateForm()) return;
 
+        String paymentMethod = getSelectedPaymentMethod();
+
+        // Jika NFC Payment → tampilkan dialog tunggu, proses order saat NFC tap
+        if ("NFC Payment".equals(paymentMethod)) {
+            if (nfcAdapter == null || !nfcAdapter.isEnabled()) {
+                showNfcGuide();
+                return;
+            }
+            showNfcWaitingDialog();
+            return;
+        }
+
+        processOrder();
+    }
+
+    /**
+     * Proses order: simpan ke SQLite, update profil user, hapus cart.
+     */
+    private void processOrder() {
         String paymentMethod = getSelectedPaymentMethod();
         String address = etShippingAddress != null
                 ? etShippingAddress.getText().toString().trim() : "";
         String phone = etPhoneNumber != null
                 ? etPhoneNumber.getText().toString().trim() : "";
-
         executor.execute(() -> {
             // 1. Buat order dengan userId dan alamat
             long orderId = orderDao.createOrder(

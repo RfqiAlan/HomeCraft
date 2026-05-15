@@ -56,10 +56,12 @@ public class DetailActivity extends AppCompatActivity {
     private TextView tvQty;
     private Button btnAddToCart;
     private ImageButton btnFavorite;
-    private ImageButton btnQtyPlus;
-    private ImageButton btnQtyMinus;
+    private com.google.android.material.button.MaterialButton btnQtyPlus;
+    private com.google.android.material.button.MaterialButton btnQtyMinus;
     private ProgressBar progressBar;
     private TextView tvError;
+    private TextView tvReviewSummary;
+    private com.google.android.material.button.MaterialButton btnSeeReviews;
 
     // ─── Data ─────────────────────────────────────────────────────────────────────
 
@@ -108,6 +110,8 @@ public class DetailActivity extends AppCompatActivity {
         btnQtyMinus     = findViewById(R.id.btn_qty_minus);
         progressBar     = findViewById(R.id.progress_detail);
         tvError         = findViewById(R.id.tv_detail_error);
+        tvReviewSummary = findViewById(R.id.tv_review_summary);
+        btnSeeReviews   = findViewById(R.id.btn_see_reviews);
 
         // Setup DAO
         DatabaseHelper dbHelper = DatabaseHelper.getInstance(this);
@@ -131,6 +135,7 @@ public class DetailActivity extends AppCompatActivity {
 
         if (btnAddToCart != null) btnAddToCart.setOnClickListener(v -> addToCart());
         if (btnFavorite  != null) btnFavorite.setOnClickListener(v -> toggleFavorite());
+        if (btnSeeReviews != null) btnSeeReviews.setOnClickListener(v -> openReviews());
 
         if (btnQtyPlus != null) btnQtyPlus.setOnClickListener(v -> {
             qty++;
@@ -218,7 +223,14 @@ public class DetailActivity extends AppCompatActivity {
     private void showProductDetail(Product product) {
         if (tvName     != null) tvName.setText(product.getName());
         if (tvPrice    != null) tvPrice.setText(formatPrice(product.getPrice()));
-        if (tvRating   != null) tvRating.setText(product.getRating() + "  (" + product.getReviewCount() + " reviews)");
+
+        String ratingText = product.getRating() + "  (" + product.getReviewCount() + " reviews)";
+        if (tvRating   != null) tvRating.setText(ratingText);
+        // Update juga summary di section review
+        if (tvReviewSummary != null) {
+            tvReviewSummary.setText("⭐ " + product.getRating() + "  •  " + product.getReviewCount() + " ulasan");
+        }
+
         if (tvCategory != null) {
             String cat = product.getCategory();
             if (cat != null && !cat.isEmpty()) {
@@ -266,9 +278,8 @@ public class DetailActivity extends AppCompatActivity {
                     (i == 0) ? dpToPx(24) : dpToPx(16), dpToPx(4));
             params.setMarginEnd(dpToPx(6));
             dot.setLayoutParams(params);
-            dot.setBackground(getDrawable(i == 0
-                    ? R.drawable.bg_indicator_active
-                    : R.drawable.bg_indicator_inactive));
+            dot.setBackground(androidx.core.content.ContextCompat.getDrawable(this,
+                    i == 0 ? R.drawable.bg_indicator_active : R.drawable.bg_indicator_inactive));
             llIndicators.addView(dot);
         }
     }
@@ -282,9 +293,8 @@ public class DetailActivity extends AppCompatActivity {
             LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) dot.getLayoutParams();
             params.width = dpToPx(isActive ? 24 : 16);
             dot.setLayoutParams(params);
-            dot.setBackground(getDrawable(isActive
-                    ? R.drawable.bg_indicator_active
-                    : R.drawable.bg_indicator_inactive));
+            dot.setBackground(androidx.core.content.ContextCompat.getDrawable(this,
+                    isActive ? R.drawable.bg_indicator_active : R.drawable.bg_indicator_inactive));
         }
     }
 
@@ -336,6 +346,15 @@ public class DetailActivity extends AppCompatActivity {
                         .show();
             });
         });
+    }
+
+    // ─── Reviews ─────────────────────────────────────────────────────────────────
+
+    private void openReviews() {
+        if (productId == null) return;
+        Intent intent = new Intent(this, ReviewActivity.class);
+        intent.putExtra(Constants.EXTRA_PRODUCT_ID, productId);
+        startActivity(intent);
     }
 
     // ─── Cart ────────────────────────────────────────────────────────────────────

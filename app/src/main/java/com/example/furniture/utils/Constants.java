@@ -61,7 +61,8 @@ public class Constants {
             "Bank Transfer",
             "E-Wallet",
             "Virtual Account",
-            "Credit/Debit Card"
+            "Credit/Debit Card",
+            "NFC Payment"
     };
 
     // ─── Prevent Instantiation ───────────────────────────────────────────────────

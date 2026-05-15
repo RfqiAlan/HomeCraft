@@ -146,35 +146,35 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
         
         if (imgFilterCategory != null) {
             imgFilterCategory.setOnClickListener(v -> {
-                String[] options = {
-                        "Harga: Terendah - Tertinggi",
-                        "Harga: Tertinggi - Terendah",
-                        "Rating: Tertinggi - Terendah",
-                        "Rating: Terendah - Tertinggi"
-                };
+                com.google.android.material.bottomsheet.BottomSheetDialog bottomSheetDialog = 
+                        new com.google.android.material.bottomsheet.BottomSheetDialog(requireContext());
+                View sheetView = LayoutInflater.from(requireContext()).inflate(R.layout.layout_bottom_sheet_sort, null);
+                bottomSheetDialog.setContentView(sheetView);
 
-                new androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                        .setTitle("Urutkan Produk")
-                        .setItems(options, (dialog, which) -> {
-                            if (productAdapter != null) {
-                                switch (which) {
-                                    case 0:
-                                        productAdapter.sortProducts(ProductAdapter.SORT_PRICE_ASC);
-                                        break;
-                                    case 1:
-                                        productAdapter.sortProducts(ProductAdapter.SORT_PRICE_DESC);
-                                        break;
-                                    case 2:
-                                        productAdapter.sortProducts(ProductAdapter.SORT_RATING_DESC);
-                                        break;
-                                    case 3:
-                                        productAdapter.sortProducts(ProductAdapter.SORT_RATING_ASC);
-                                        break;
-                                }
-                            }
-                        })
-                        .setNegativeButton("Batal", null)
-                        .show();
+                // Make parent background transparent to show rounded corners
+                View bottomSheet = (View) sheetView.getParent();
+                bottomSheet.setBackgroundColor(android.graphics.Color.TRANSPARENT);
+
+                android.widget.RadioGroup rgSortOptions = sheetView.findViewById(R.id.rg_sort_options);
+                com.google.android.material.button.MaterialButton btnApplySort = sheetView.findViewById(R.id.btn_apply_sort);
+
+                btnApplySort.setOnClickListener(btnView -> {
+                    if (productAdapter != null) {
+                        int checkedId = rgSortOptions.getCheckedRadioButtonId();
+                        if (checkedId == R.id.rb_price_asc) {
+                            productAdapter.sortProducts(ProductAdapter.SORT_PRICE_ASC);
+                        } else if (checkedId == R.id.rb_price_desc) {
+                            productAdapter.sortProducts(ProductAdapter.SORT_PRICE_DESC);
+                        } else if (checkedId == R.id.rb_rating_desc) {
+                            productAdapter.sortProducts(ProductAdapter.SORT_RATING_DESC);
+                        } else if (checkedId == R.id.rb_rating_asc) {
+                            productAdapter.sortProducts(ProductAdapter.SORT_RATING_ASC);
+                        }
+                    }
+                    bottomSheetDialog.dismiss();
+                });
+
+                bottomSheetDialog.show();
             });
         }
 
