@@ -5,7 +5,7 @@
     android:id="@+id/swipe_refresh"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="?android:attr/colorBackground"
     tools:context=".ui.HomeFragment">
 
     <androidx.core.widget.NestedScrollView
@@ -24,7 +24,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:text="Make home"
-                android:textColor="#808080"
+                android:textColor="?android:attr/textColorSecondary"
                 android:textSize="16sp"
                 android:fontFamily="serif"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -36,7 +36,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="BEAUTIFUL"
-                android:textColor="#212121"
+                android:textColor="?android:attr/textColorPrimary"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:fontFamily="serif"
@@ -67,7 +67,7 @@
                     android:drawableStart="@drawable/ic_search"
                     android:drawablePadding="8dp"
                     android:textColorHint="#A0A0A0"
-                    android:textColor="#212121"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:textSize="14sp" />
                     
                 <androidx.cardview.widget.CardView
@@ -127,7 +127,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:text="Produk tidak ditemukan"
-                    android:textColor="#212121"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:fontFamily="sans-serif-medium" />

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="?android:attr/colorBackground"
     tools:context=".ui.FavoriteFragment">
 
     <TextView
@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="Favorites"
-        android:textColor="#212121"
+        android:textColor="?android:attr/textColorPrimary"
         android:textSize="18sp"
         android:textStyle="bold"
         android:fontFamily="serif"
@@ -43,7 +43,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="Belum ada produk favorit."
-        android:textColor="#808080"
+        android:textColor="?android:attr/textColorSecondary"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:cardCornerRadius="24dp"
-    app:cardBackgroundColor="#FFFFFF"
+    app:cardBackgroundColor="?android:attr/colorBackground"
     app:cardElevation="0dp">
 
     <LinearLayout
@@ -32,7 +32,7 @@
         android:fontFamily="serif"
         android:gravity="center"
         android:text="Title"
-        android:textColor="#1A1A1A"
+        android:textColor="?android:attr/textColorPrimary"
         android:textSize="20sp"
         android:textStyle="bold" />
 

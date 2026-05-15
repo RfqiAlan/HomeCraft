@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="?android:attr/colorBackground"
     tools:context=".ui.CartFragment">
 
     <!-- Top App Bar Area -->
@@ -23,7 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="My cart"
-        android:textColor="#212121"
+        android:textColor="?android:attr/textColorPrimary"
         android:textSize="18sp"
         android:textStyle="bold"
         android:fontFamily="serif"
@@ -53,7 +53,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="Keranjang belanja kosong.\nTambahkan produk dari halaman detail."
-        android:textColor="#808080"
+        android:textColor="?android:attr/textColorSecondary"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -67,7 +67,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="20dp"
-        android:background="@color/white"
+        android:background="?android:attr/colorBackground"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <!-- Promo Code -->
@@ -79,7 +79,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:boxBackgroundColor="#F5F5F5"
+                app:boxBackgroundColor="?attr/colorSurfaceVariant"
                 app:boxCornerRadiusTopStart="8dp"
                 app:boxCornerRadiusTopEnd="8dp"
                 app:boxCornerRadiusBottomStart="8dp"
@@ -130,7 +130,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Total:"
-                android:textColor="#808080"
+                android:textColor="?android:attr/textColorSecondary"
                 android:textStyle="bold"
                 android:textSize="18sp" />
                 
@@ -139,7 +139,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="$ 95.00"
-                android:textColor="#212121"
+                android:textColor="?android:attr/textColorPrimary"
                 android:textStyle="bold"
                 android:textSize="18sp"
                 android:layout_alignParentEnd="true" />

@@ -30,12 +30,21 @@ public class SettingsFragment extends Fragment {
     private Switch switchTheme;
     private TextView tvThemeLabel;
     private TextView tvAppVersion;
-    private TextView tvUserInfo;
+    private View layoutAuthenticated;
+    private View layoutUnauthenticated;
+    private TextView tvUserName;
+    private TextView tvUserEmail;
     private Button btnLogout;
+    private Button btnLogin;
+    
+    private View layoutShippingAddress;
+    private TextView tvCurrentAddress;
 
     // ─── Data ─────────────────────────────────────────────────────────────────────
 
     private SessionManager sessionManager;
+    private com.example.furniture.database.UserDao userDao;
+    private java.util.concurrent.ExecutorService executorService;
 
     // ─── Lifecycle ───────────────────────────────────────────────────────────────
 
@@ -54,6 +63,14 @@ public class SettingsFragment extends Fragment {
         loadSavedTheme();
         displayUserInfo();
     }
+    
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (executorService != null) {
+            executorService.shutdown();
+        }
+    }
 
     // ─── Init ────────────────────────────────────────────────────────────────────
 
@@ -61,14 +78,24 @@ public class SettingsFragment extends Fragment {
         switchTheme  = view.findViewById(R.id.switch_dark_mode);
         tvThemeLabel = view.findViewById(R.id.tv_theme_label);
         tvAppVersion = view.findViewById(R.id.tv_app_version);
-        tvUserInfo   = view.findViewById(R.id.tv_user_info);
+        layoutAuthenticated = view.findViewById(R.id.layout_authenticated);
+        layoutUnauthenticated = view.findViewById(R.id.layout_unauthenticated);
+        tvUserName   = view.findViewById(R.id.tv_user_name);
+        tvUserEmail  = view.findViewById(R.id.tv_user_email);
         btnLogout    = view.findViewById(R.id.btn_logout);
+        btnLogin     = view.findViewById(R.id.btn_login_profile);
+        layoutShippingAddress = view.findViewById(R.id.layout_shipping_address);
+        tvCurrentAddress      = view.findViewById(R.id.tv_current_address);
 
         sessionManager = new SessionManager(requireContext());
+        userDao = new com.example.furniture.database.UserDao(
+            com.example.furniture.database.DatabaseHelper.getInstance(requireContext())
+        );
+        executorService = java.util.concurrent.Executors.newSingleThreadExecutor();
 
         // Tampilkan versi aplikasi
         if (tvAppVersion != null) {
-            tvAppVersion.setText("FurniSpace v" + BuildConfig.VERSION_NAME);
+            tvAppVersion.setText("HomeCraft v" + BuildConfig.VERSION_NAME);
         }
 
         // Listener toggle tema
@@ -84,25 +111,94 @@ public class SettingsFragment extends Fragment {
         if (btnLogout != null) {
             btnLogout.setOnClickListener(v -> logout());
         }
+
+        // Tombol login
+        if (btnLogin != null) {
+            btnLogin.setOnClickListener(v -> {
+                android.content.Intent intent = new android.content.Intent(requireContext(), LoginActivity.class);
+                startActivity(intent);
+            });
+        }
+        
+        // Edit Shipping Address
+        if (layoutShippingAddress != null) {
+            layoutShippingAddress.setOnClickListener(v -> showEditAddressDialog());
+        }
     }
 
-    // ─── User Info ───────────────────────────────────────────────────────────────
+    @Override
+    public void onResume() {
+        super.onResume();
+        displayUserInfo(); // Refresh user info if they logged in from LoginActivity
+    }
+
+    // ─── User Info & Address ──────────────────────────────────────────────────────
 
     /**
      * Tampilkan info user yang sedang login, atau pesan jika belum login.
      */
     private void displayUserInfo() {
-        if (tvUserInfo == null) return;
+        if (sessionManager == null) return;
 
         if (sessionManager.isLoggedIn()) {
-            String info = "👤 " + sessionManager.getUserName()
-                    + "\n📧 " + sessionManager.getUserEmail();
-            tvUserInfo.setText(info);
-            if (btnLogout != null) btnLogout.setVisibility(View.VISIBLE);
+            if (layoutAuthenticated != null) layoutAuthenticated.setVisibility(View.VISIBLE);
+            if (layoutUnauthenticated != null) layoutUnauthenticated.setVisibility(View.GONE);
+
+            if (tvUserName != null) tvUserName.setText(sessionManager.getUserName());
+            if (tvUserEmail != null) tvUserEmail.setText(sessionManager.getUserEmail());
+            
+            // Load address from DB
+            loadAddressFromDb();
         } else {
-            tvUserInfo.setText("Belum login. Login diperlukan saat checkout.");
-            if (btnLogout != null) btnLogout.setVisibility(View.GONE);
+            if (layoutAuthenticated != null) layoutAuthenticated.setVisibility(View.GONE);
+            if (layoutUnauthenticated != null) layoutUnauthenticated.setVisibility(View.VISIBLE);
         }
+    }
+    
+    private void loadAddressFromDb() {
+        executorService.execute(() -> {
+            com.example.furniture.model.User user = userDao.getUserById(sessionManager.getUserId());
+            if (user != null && getActivity() != null) {
+                getActivity().runOnUiThread(() -> {
+                    if (tvCurrentAddress != null) {
+                        String address = user.getAddress();
+                        tvCurrentAddress.setText((address != null && !address.trim().isEmpty()) ? address : "Belum diatur");
+                    }
+                });
+            }
+        });
+    }
+    
+    private void showEditAddressDialog() {
+        android.widget.EditText input = new android.widget.EditText(requireContext());
+        if (tvCurrentAddress != null && !tvCurrentAddress.getText().toString().equals("Belum diatur")) {
+            input.setText(tvCurrentAddress.getText().toString());
+        }
+        input.setHint("Masukkan alamat pengiriman");
+
+        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle("Edit Alamat")
+                .setView(input)
+                .setPositiveButton("Simpan", (dialog, which) -> {
+                    String newAddress = input.getText().toString().trim();
+                    saveAddressToDb(newAddress);
+                })
+                .setNegativeButton("Batal", null)
+                .show();
+    }
+    
+    private void saveAddressToDb(String newAddress) {
+        executorService.execute(() -> {
+            userDao.updateAddress(sessionManager.getUserId(), newAddress);
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(() -> {
+                    if (tvCurrentAddress != null) {
+                        tvCurrentAddress.setText(newAddress.isEmpty() ? "Belum diatur" : newAddress);
+                    }
+                    Toast.makeText(requireContext(), "Alamat diperbarui", Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
     }
 
     /**

@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
         android:text="Urutkan Produk"
-        android:textColor="#1A1A1A"
+        android:textColor="?android:attr/textColorPrimary"
         android:textSize="20sp"
         android:textStyle="bold" />
 
@@ -37,7 +37,7 @@
             android:layout_marginBottom="12dp"
             android:buttonTint="#1A1A1A"
             android:text="Harga: Terendah ke Tertinggi"
-            android:textColor="#1A1A1A"
+            android:textColor="?android:attr/textColorPrimary"
             android:textSize="16sp" />
 
         <RadioButton
@@ -47,7 +47,7 @@
             android:layout_marginBottom="12dp"
             android:buttonTint="#1A1A1A"
             android:text="Harga: Tertinggi ke Terendah"
-            android:textColor="#1A1A1A"
+            android:textColor="?android:attr/textColorPrimary"
             android:textSize="16sp" />
 
         <RadioButton
@@ -57,7 +57,7 @@
             android:layout_marginBottom="12dp"
             android:buttonTint="#1A1A1A"
             android:text="Rating: Tertinggi"
-            android:textColor="#1A1A1A"
+            android:textColor="?android:attr/textColorPrimary"
             android:textSize="16sp" />
 
         <RadioButton
@@ -66,7 +66,7 @@
             android:layout_height="wrap_content"
             android:buttonTint="#1A1A1A"
             android:text="Rating: Terendah"
-            android:textColor="#1A1A1A"
+            android:textColor="?android:attr/textColorPrimary"
             android:textSize="16sp" />
     </RadioGroup>
 
