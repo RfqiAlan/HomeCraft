@@ -38,6 +38,7 @@ public class UserDao {
         values.put("email", user.getEmail());
         values.put("password", user.getPassword());
         values.put("address", user.getAddress() != null ? user.getAddress() : "");
+        values.put("phone_number", user.getPhoneNumber() != null ? user.getPhoneNumber() : "");
         values.put("default_payment", user.getDefaultPayment() != null ? user.getDefaultPayment() : "");
 
         return db.insert(TABLE, null, values);
@@ -116,10 +117,11 @@ public class UserDao {
     /**
      * Update alamat dan payment default sekaligus (dipanggil saat checkout selesai).
      */
-    public void updateProfile(int userId, String address, String paymentMethod) {
+    public void updateProfile(int userId, String address, String phoneNumber, String paymentMethod) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("address", address);
+        values.put("phone_number", phoneNumber);
         values.put("default_payment", paymentMethod);
         db.update(TABLE, values, "id = ?", new String[]{String.valueOf(userId)});
     }
@@ -151,6 +153,7 @@ public class UserDao {
         user.setEmail(cursor.getString(cursor.getColumnIndexOrThrow("email")));
         user.setPassword(cursor.getString(cursor.getColumnIndexOrThrow("password")));
         user.setAddress(cursor.getString(cursor.getColumnIndexOrThrow("address")));
+        user.setPhoneNumber(cursor.getString(cursor.getColumnIndexOrThrow("phone_number")));
         user.setDefaultPayment(cursor.getString(cursor.getColumnIndexOrThrow("default_payment")));
         return user;
     }

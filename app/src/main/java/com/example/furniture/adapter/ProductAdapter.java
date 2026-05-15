@@ -17,6 +17,8 @@ import com.example.furniture.model.Product;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -37,6 +39,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
     private final Context context;
     private List<Product> productList;
+    private List<Product> originalProductList;
     private OnProductClickListener listener;
 
     // ─── Constructor ────────────────────────────────────────────────────────────
@@ -44,11 +47,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     public ProductAdapter(Context context) {
         this.context = context;
         this.productList = new ArrayList<>();
+        this.originalProductList = new ArrayList<>();
     }
 
     public ProductAdapter(Context context, OnProductClickListener listener) {
         this.context = context;
         this.productList = new ArrayList<>();
+        this.originalProductList = new ArrayList<>();
         this.listener = listener;
     }
 
@@ -62,7 +67,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
      * Mengganti seluruh data produk dan refresh tampilan.
      */
     public void setProducts(List<Product> products) {
-        this.productList = products != null ? products : new ArrayList<>();
+        this.productList = products != null ? new ArrayList<>(products) : new ArrayList<>();
+        this.originalProductList = products != null ? new ArrayList<>(products) : new ArrayList<>();
         notifyDataSetChanged();
     }
 
@@ -73,13 +79,64 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         if (products != null) {
             int startPos = productList.size();
             productList.addAll(products);
+            originalProductList.addAll(products);
             notifyItemRangeInserted(startPos, products.size());
         }
     }
 
     public void clearProducts() {
         productList.clear();
+        originalProductList.clear();
         notifyDataSetChanged();
+    }
+
+    public void filter(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            productList.clear();
+            productList.addAll(originalProductList);
+        } else {
+            String lowerCaseQuery = query.toLowerCase(Locale.getDefault());
+            List<Product> filteredList = new ArrayList<>();
+            for (Product product : originalProductList) {
+                if (product.getName() != null && product.getName().toLowerCase(Locale.getDefault()).contains(lowerCaseQuery)) {
+                    filteredList.add(product);
+                }
+            }
+            productList.clear();
+            productList.addAll(filteredList);
+        }
+        notifyDataSetChanged();
+    }
+
+    // ─── Filter & Sort ──────────────────────────────────────────────────────────
+
+    public static final int SORT_PRICE_ASC = 0;
+    public static final int SORT_PRICE_DESC = 1;
+    public static final int SORT_RATING_ASC = 2;
+    public static final int SORT_RATING_DESC = 3;
+
+    public void sortProducts(int sortType) {
+        Comparator<Product> comparator = null;
+        switch (sortType) {
+            case SORT_PRICE_ASC:
+                comparator = (p1, p2) -> Double.compare(p1.getPrice(), p2.getPrice());
+                break;
+            case SORT_PRICE_DESC:
+                comparator = (p1, p2) -> Double.compare(p2.getPrice(), p1.getPrice());
+                break;
+            case SORT_RATING_ASC:
+                comparator = (p1, p2) -> Double.compare(p1.getRating(), p2.getRating());
+                break;
+            case SORT_RATING_DESC:
+                comparator = (p1, p2) -> Double.compare(p2.getRating(), p1.getRating());
+                break;
+        }
+
+        if (comparator != null) {
+            Collections.sort(productList, comparator);
+            Collections.sort(originalProductList, comparator);
+            notifyDataSetChanged();
+        }
     }
 
     // ─── RecyclerView.Adapter ────────────────────────────────────────────────────

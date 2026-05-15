@@ -99,7 +99,6 @@
                     android:orientation="vertical"
                     android:padding="20dp">
 
-                    <!-- Brand tag -->
                     <TextView
                         android:id="@+id/tv_detail_category"
                         android:layout_width="wrap_content"
@@ -159,12 +158,22 @@
                             android:gravity="center_vertical"
                             android:orientation="horizontal">
 
-                            <ImageButton
+                            <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btn_qty_minus"
                                 android:layout_width="32dp"
                                 android:layout_height="32dp"
-                                android:background="@drawable/bg_qty_btn"
-                                android:src="@drawable/ic_minus" />
+                                app:backgroundTint="#F5F5F5"
+                                app:cornerRadius="8dp"
+                                app:elevation="0dp"
+                                app:icon="@drawable/ic_minus"
+                                app:iconTint="#212121"
+                                app:iconSize="16dp"
+                                app:iconGravity="textStart"
+                                android:insetTop="0dp"
+                                android:insetBottom="0dp"
+                                android:paddingStart="8dp"
+                                android:paddingEnd="8dp"
+                                style="@style/Widget.MaterialComponents.Button" />
 
                             <TextView
                                 android:id="@+id/tv_qty"
@@ -176,12 +185,22 @@
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
 
-                            <ImageButton
+                            <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btn_qty_plus"
                                 android:layout_width="32dp"
                                 android:layout_height="32dp"
-                                android:background="@drawable/bg_qty_btn"
-                                android:src="@drawable/ic_add" />
+                                app:backgroundTint="#F5F5F5"
+                                app:cornerRadius="8dp"
+                                app:elevation="0dp"
+                                app:icon="@drawable/ic_add"
+                                app:iconTint="#212121"
+                                app:iconSize="16dp"
+                                app:iconGravity="textStart"
+                                android:insetTop="0dp"
+                                android:insetBottom="0dp"
+                                android:paddingStart="8dp"
+                                android:paddingEnd="8dp"
+                                style="@style/Widget.MaterialComponents.Button" />
                         </LinearLayout>
                     </LinearLayout>
 
@@ -280,11 +299,14 @@
         android:paddingEnd="20dp"
         android:paddingBottom="24dp">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_add_to_cart"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:background="@drawable/bg_button_black"
+            app:backgroundTint="#1A1A1A"
+            app:cornerRadius="28dp"
+            app:elevation="0dp"
+            style="@style/Widget.MaterialComponents.Button"
             android:text="Add to Cart"
             android:textAllCaps="false"
             android:textColor="@color/white"

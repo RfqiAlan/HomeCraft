@@ -2,10 +2,16 @@ package com.example.furniture.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,8 +30,6 @@ import com.example.furniture.api.ApiService;
 import com.example.furniture.api.RetrofitClient;
 import com.example.furniture.database.DatabaseHelper;
 import com.example.furniture.database.ProductDao;
-import com.example.furniture.model.Category;
-import com.example.furniture.model.CategoryResponse;
 import com.example.furniture.model.Product;
 import com.example.furniture.model.ProductResponse;
 import com.example.furniture.utils.Constants;
@@ -46,12 +50,13 @@ import retrofit2.Response;
  * HomeFragment — menampilkan daftar produk furniture.
  * Mengambil data dari API, menyimpan ke SQLite, dan fallback ke cache saat offline.
  */
-public class HomeFragment extends Fragment implements ProductAdapter.OnProductClickListener, CategoryAdapter.OnCategoryClickListener {
+public class HomeFragment extends Fragment implements ProductAdapter.OnProductClickListener {
 
     // ─── Views ───────────────────────────────────────────────────────────────────
 
     private RecyclerView recyclerView;
-    private RecyclerView rvCategories;
+    private EditText etSearch;
+    private ImageView imgFilterCategory;
     private ProgressBar progressBar;
     private TextView tvError;
     private Button btnRefresh;
@@ -60,10 +65,11 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
     // ─── Data ─────────────────────────────────────────────────────────────────────
 
     private ProductAdapter productAdapter;
-    private CategoryAdapter categoryAdapter;
     private ProductDao productDao;
     private String currentCategoryId = Constants.FURNITURE_CATEGORY_ID;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private Handler searchHandler = new Handler(Looper.getMainLooper());
+    private Runnable searchRunnable;
 
     // ─── Lifecycle ───────────────────────────────────────────────────────────────
 
@@ -79,7 +85,6 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initView(view);
-        loadCategories();
         loadProducts();
     }
 
@@ -93,17 +98,69 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
 
     private void initView(View view) {
         recyclerView  = view.findViewById(R.id.rv_products);
-        rvCategories  = view.findViewById(R.id.rv_categories);
+        etSearch      = view.findViewById(R.id.et_search);
+        imgFilterCategory = view.findViewById(R.id.img_filter_category);
         progressBar   = view.findViewById(R.id.progress_bar);
         tvError       = view.findViewById(R.id.tv_error);
         btnRefresh    = view.findViewById(R.id.btn_refresh);
         swipeRefresh  = view.findViewById(R.id.swipe_refresh);
 
-        // Setup Categories RecyclerView
-        if (rvCategories != null) {
-            categoryAdapter = new CategoryAdapter(requireContext(), this);
-            rvCategories.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(requireContext(), androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL, false));
-            rvCategories.setAdapter(categoryAdapter);
+        // Setup Search and Filter
+        if (etSearch != null) {
+            etSearch.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    if (searchRunnable != null) {
+                        searchHandler.removeCallbacks(searchRunnable);
+                    }
+                    searchRunnable = () -> {
+                        if (productAdapter != null) {
+                            productAdapter.filter(s.toString());
+                        }
+                    };
+                    searchHandler.postDelayed(searchRunnable, 500);
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {}
+            });
+        }
+        
+        if (imgFilterCategory != null) {
+            imgFilterCategory.setOnClickListener(v -> {
+                String[] options = {
+                        "Harga: Terendah - Tertinggi",
+                        "Harga: Tertinggi - Terendah",
+                        "Rating: Tertinggi - Terendah",
+                        "Rating: Terendah - Tertinggi"
+                };
+
+                new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                        .setTitle("Urutkan Produk")
+                        .setItems(options, (dialog, which) -> {
+                            if (productAdapter != null) {
+                                switch (which) {
+                                    case 0:
+                                        productAdapter.sortProducts(ProductAdapter.SORT_PRICE_ASC);
+                                        break;
+                                    case 1:
+                                        productAdapter.sortProducts(ProductAdapter.SORT_PRICE_DESC);
+                                        break;
+                                    case 2:
+                                        productAdapter.sortProducts(ProductAdapter.SORT_RATING_DESC);
+                                        break;
+                                    case 3:
+                                        productAdapter.sortProducts(ProductAdapter.SORT_RATING_ASC);
+                                        break;
+                                }
+                            }
+                        })
+                        .setNegativeButton("Batal", null)
+                        .show();
+            });
         }
 
         // Setup RecyclerView dengan GridLayout 2 kolom
@@ -117,7 +174,6 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
         // Tombol refresh manual
         if (btnRefresh != null) {
             btnRefresh.setOnClickListener(v -> {
-                loadCategories();
                 loadProducts();
             });
         }
@@ -125,7 +181,6 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
         // Swipe to refresh
         if (swipeRefresh != null) {
             swipeRefresh.setOnRefreshListener(() -> {
-                loadCategories();
                 loadProductsFromApi();
             });
         }
@@ -144,57 +199,7 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
         }
     }
 
-    private void loadCategories() {
-        if (!NetworkUtils.isInternetAvailable(requireContext())) return;
 
-        ApiService apiService = RetrofitClient.getApiService();
-        Call<CategoryResponse> call = apiService.getCategories();
-        call.enqueue(new Callback<CategoryResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<CategoryResponse> call, @NonNull Response<CategoryResponse> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().getPayload() != null) {
-                    List<Category> allCategories = response.body().getPayload().getCategories();
-                    List<Category> furnitureSubcategories = filterFurnitureCategories(allCategories);
-                    
-                    if (!furnitureSubcategories.isEmpty()) {
-                        // Tambahkan pseudo-kategori "All" di awal
-                        Category allCategory = new Category();
-                        allCategory.setId(Constants.FURNITURE_CATEGORY_ID);
-                        allCategory.setName("All");
-                        furnitureSubcategories.add(0, allCategory);
-                        
-                        if (categoryAdapter != null) {
-                            categoryAdapter.setCategories(furnitureSubcategories);
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<CategoryResponse> call, @NonNull Throwable t) {
-                // Ignore failure for categories
-            }
-        });
-    }
-
-    private List<Category> filterFurnitureCategories(List<Category> categories) {
-        List<Category> result = new ArrayList<>();
-        if (categories == null) return result;
-        for (Category cat : categories) {
-            if (Constants.FURNITURE_CATEGORY_ID.equals(cat.getId()) ||
-                    Constants.FURNITURE_CATEGORY_NAME.equalsIgnoreCase(cat.getName())) {
-                if (cat.getSubCategories() != null) {
-                    result.addAll(cat.getSubCategories());
-                }
-                return result;
-            }
-            if (cat.getSubCategories() != null) {
-                List<Category> found = filterFurnitureCategories(cat.getSubCategories());
-                if (!found.isEmpty()) return found;
-            }
-        }
-        return result;
-    }
 
     /**
      * Ambil produk dari API Retrofit.
@@ -349,9 +354,4 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
         });
     }
 
-    @Override
-    public void onCategoryClick(Category category) {
-        currentCategoryId = category.getId();
-        loadProducts(); // Load products based on the new category ID
-    }
 }

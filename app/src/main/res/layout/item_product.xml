@@ -24,12 +24,14 @@
             android:scaleType="centerCrop"
             android:src="@drawable/ic_image_placeholder" />
 
-        <FrameLayout
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_gravity="bottom|end"
             android:layout_margin="12dp"
-            android:background="@drawable/bg_bag_overlay">
+            app:cardCornerRadius="8dp"
+            app:cardBackgroundColor="#4D000000"
+            app:cardElevation="0dp">
 
             <ImageView
                 android:layout_width="16dp"
@@ -37,7 +39,7 @@
                 android:layout_gravity="center"
                 android:src="@drawable/ic_cart"
                 app:tint="#FFFFFF" />
-        </FrameLayout>
+        </com.google.android.material.card.MaterialCardView>
 
     </androidx.cardview.widget.CardView>
 

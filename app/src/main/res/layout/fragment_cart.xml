@@ -76,27 +76,48 @@
             android:layout_height="56dp"
             android:layout_marginBottom="24dp">
             
-            <EditText
-                android:id="@+id/et_promo_code"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/bg_qty_btn"
-                android:hint="Enter your promo code"
-                android:textColorHint="#9E9E9E"
-                android:textSize="14sp"
-                android:paddingStart="16dp"
-                android:paddingEnd="64dp"/>
+                app:boxBackgroundColor="#F5F5F5"
+                app:boxCornerRadiusTopStart="8dp"
+                app:boxCornerRadiusTopEnd="8dp"
+                app:boxCornerRadiusBottomStart="8dp"
+                app:boxCornerRadiusBottomEnd="8dp"
+                app:hintEnabled="false"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox">
 
-            <ImageButton
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_promo_code"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="Enter your promo code"
+                    android:textColorHint="#9E9E9E"
+                    android:textSize="14sp"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="64dp"
+                    android:background="@null" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_apply_promo"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="4dp"
-                android:background="@drawable/bg_button_boarding"
-                android:src="@drawable/ic_arrow_right"
-                app:tint="@color/white" />
+                app:backgroundTint="#242424"
+                app:cornerRadius="4dp"
+                app:elevation="0dp"
+                app:icon="@drawable/ic_arrow_right"
+                app:iconTint="@color/white"
+                app:iconSize="16dp"
+                app:iconGravity="textStart"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                style="@style/Widget.MaterialComponents.Button" />
         </RelativeLayout>
 
         <!-- Summary -->
@@ -124,11 +145,14 @@
                 android:layout_alignParentEnd="true" />
         </RelativeLayout>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_checkout"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:background="@drawable/bg_button_boarding"
+            app:backgroundTint="#242424"
+            app:cornerRadius="4dp"
+            app:elevation="0dp"
+            style="@style/Widget.MaterialComponents.Button"
             android:text="Check out"
             android:textAllCaps="false"
             android:textColor="@color/white"

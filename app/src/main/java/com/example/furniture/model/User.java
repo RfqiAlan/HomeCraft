@@ -11,6 +11,7 @@ public class User {
     private String email;
     private String password;   // Simulasi — plain text (bukan untuk production)
     private String address;
+    private String phoneNumber;
     private String defaultPayment;
 
     // ─── Constructor ────────────────────────────────────────────────────────────
@@ -22,6 +23,7 @@ public class User {
         this.email    = email;
         this.password = password;
         this.address  = "";
+        this.phoneNumber = "";
         this.defaultPayment = "";
     }
 
@@ -32,6 +34,7 @@ public class User {
     public String getEmail() { return email; }
     public String getPassword() { return password; }
     public String getAddress() { return address; }
+    public String getPhoneNumber() { return phoneNumber; }
     public String getDefaultPayment() { return defaultPayment; }
 
     // ─── Setters ─────────────────────────────────────────────────────────────────
@@ -41,6 +44,7 @@ public class User {
     public void setEmail(String email) { this.email = email; }
     public void setPassword(String password) { this.password = password; }
     public void setAddress(String address) { this.address = address; }
+    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
     public void setDefaultPayment(String defaultPayment) { this.defaultPayment = defaultPayment; }
 
     @Override

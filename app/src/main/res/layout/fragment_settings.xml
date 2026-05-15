@@ -109,14 +109,17 @@
     </androidx.cardview.widget.CardView>
 
     <!-- Logout Button -->
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_logout"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="32dp"
-        android:background="@drawable/bg_button_boarding"
+        app:backgroundTint="#242424"
+        app:cornerRadius="4dp"
+        app:elevation="0dp"
+        style="@style/Widget.MaterialComponents.Button"
         android:text="LOGOUT"
         android:textColor="@color/white"
         android:textSize="16sp"

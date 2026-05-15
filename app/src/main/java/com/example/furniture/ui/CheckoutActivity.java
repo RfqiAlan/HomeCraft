@@ -54,6 +54,7 @@ public class CheckoutActivity extends AppCompatActivity {
     private TextView tvCheckoutTotal;
     private TextView tvUserName;
     private EditText etShippingAddress;
+    private EditText etPhoneNumber;
     private RadioGroup rgPaymentMethod;
     private Button btnPlaceOrder;
     private View layoutSuccess;
@@ -111,6 +112,7 @@ public class CheckoutActivity extends AppCompatActivity {
         tvCheckoutTotal  = findViewById(R.id.tv_checkout_total);
         tvUserName       = findViewById(R.id.tv_checkout_user_name);
         etShippingAddress = findViewById(R.id.et_shipping_address);
+        etPhoneNumber    = findViewById(R.id.et_phone_number);
         rgPaymentMethod  = findViewById(R.id.rg_payment_method);
         btnPlaceOrder    = findViewById(R.id.btn_place_order);
         layoutSuccess    = findViewById(R.id.layout_order_success);
@@ -225,6 +227,11 @@ public class CheckoutActivity extends AppCompatActivity {
             etShippingAddress.setText(currentUser.getAddress());
         }
 
+        // Isi nomor hp tersimpan
+        if (etPhoneNumber != null && !TextUtils.isEmpty(currentUser.getPhoneNumber())) {
+            etPhoneNumber.setText(currentUser.getPhoneNumber());
+        }
+
         // Pilih payment method default
         if (rgPaymentMethod != null && !TextUtils.isEmpty(currentUser.getDefaultPayment())) {
             String savedPayment = currentUser.getDefaultPayment();
@@ -260,6 +267,14 @@ public class CheckoutActivity extends AppCompatActivity {
             return false;
         }
 
+        // Validasi nomor hp
+        String phone = etPhoneNumber != null
+                ? etPhoneNumber.getText().toString().trim() : "";
+        if (TextUtils.isEmpty(phone)) {
+            if (etPhoneNumber != null) etPhoneNumber.setError("Nomor HP wajib diisi");
+            return false;
+        }
+
         // Validasi payment method
         if (getSelectedPaymentMethod() == null) {
             Toast.makeText(this, "Pilih metode pembayaran terlebih dahulu.",
@@ -278,6 +293,8 @@ public class CheckoutActivity extends AppCompatActivity {
         String paymentMethod = getSelectedPaymentMethod();
         String address = etShippingAddress != null
                 ? etShippingAddress.getText().toString().trim() : "";
+        String phone = etPhoneNumber != null
+                ? etPhoneNumber.getText().toString().trim() : "";
 
         executor.execute(() -> {
             // 1. Buat order dengan userId dan alamat
@@ -293,8 +310,8 @@ public class CheckoutActivity extends AppCompatActivity {
                 // 2. Simpan detail item
                 orderDao.insertOrderDetail(orderId, cartItems);
 
-                // 3. Simpan alamat & payment ke profil user agar pre-fill berikutnya
-                userDao.updateProfile(sessionManager.getUserId(), address, paymentMethod);
+                // 3. Simpan alamat, phone & payment ke profil user agar pre-fill berikutnya
+                userDao.updateProfile(sessionManager.getUserId(), address, phone, paymentMethod);
 
                 // 4. Kosongkan cart
                 cartDao.clearCart();

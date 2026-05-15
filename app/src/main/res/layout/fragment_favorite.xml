@@ -72,14 +72,17 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Add All Button -->
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_add_all"
         android:layout_width="0dp"
         android:layout_height="56dp"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="24dp"
-        android:background="@drawable/bg_button_boarding"
+        app:backgroundTint="#242424"
+        app:cornerRadius="4dp"
+        app:elevation="0dp"
+        style="@style/Widget.MaterialComponents.Button"
         android:text="Add all to my cart"
         android:textAllCaps="false"
         android:textColor="@color/white"

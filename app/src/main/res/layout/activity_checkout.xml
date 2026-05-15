@@ -183,6 +183,51 @@
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
+                <!-- Phone Number Section -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp">
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Phone Number"
+                        android:textColor="#808080"
+                        android:textSize="16sp" />
+                        
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_edit"
+                        android:layout_alignParentEnd="true" />
+                </RelativeLayout>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="2dp"
+                    android:layout_marginBottom="24dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <EditText
+                            android:id="@+id/et_phone_number"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@null"
+                            android:hint="08123456789"
+                            android:inputType="phone"
+                            android:textColor="#808080"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
                 <!-- Delivery Method Section -->
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -323,11 +368,14 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_place_order"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:background="@drawable/bg_button_boarding"
+            app:backgroundTint="#242424"
+            app:cornerRadius="4dp"
+            app:elevation="0dp"
+            style="@style/Widget.MaterialComponents.Button"
             android:text="SUBMIT ORDER"
             android:textColor="@color/white"
             android:textSize="16sp"
@@ -408,13 +456,16 @@
             android:layout_marginTop="32dp"
             android:layout_marginBottom="40dp"/>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_track_orders"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            android:background="@drawable/bg_button_boarding"
+            app:backgroundTint="#242424"
+            app:cornerRadius="4dp"
+            app:elevation="0dp"
+            style="@style/Widget.MaterialComponents.Button"
             android:text="Track your orders"
             android:textAllCaps="false"
             android:textColor="@color/white"
@@ -425,13 +476,18 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginBottom="16dp"/>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_back_to_home"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            android:background="@drawable/bg_button_outline"
+            app:backgroundTint="@android:color/white"
+            app:strokeColor="#212121"
+            app:strokeWidth="1dp"
+            app:cornerRadius="8dp"
+            app:elevation="0dp"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:text="BACK TO HOME"
             android:textColor="#212121"
             android:textSize="16sp"

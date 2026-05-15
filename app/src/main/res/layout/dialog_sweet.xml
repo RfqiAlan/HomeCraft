@@ -1,13 +1,19 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_sweet_dialog"
-    android:orientation="vertical"
-    android:paddingStart="28dp"
-    android:paddingTop="32dp"
-    android:paddingEnd="28dp"
-    android:paddingBottom="24dp">
+    app:cardCornerRadius="24dp"
+    app:cardBackgroundColor="#FFFFFF"
+    app:cardElevation="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="28dp"
+        android:paddingTop="32dp"
+        android:paddingEnd="28dp"
+        android:paddingBottom="24dp">
 
     <!-- Icon -->
     <ImageView
@@ -42,20 +48,21 @@
         android:textColor="#666666"
         android:textSize="14sp" />
 
-    <!-- Confirm Button -->
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_sweet_confirm"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="28dp"
-        android:background="@drawable/bg_button_black"
+        app:backgroundTint="#1A1A1A"
+        app:cornerRadius="28dp"
+        app:elevation="0dp"
+        style="@style/Widget.MaterialComponents.Button"
         android:text="OK"
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:textSize="15sp"
         android:textStyle="bold" />
 
-    <!-- Cancel Button -->
     <Button
         android:id="@+id/btn_sweet_cancel"
         android:layout_width="match_parent"
@@ -68,4 +75,5 @@
         android:textSize="14sp"
         android:visibility="gone" />
 
-</LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

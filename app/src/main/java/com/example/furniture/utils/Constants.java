@@ -19,7 +19,7 @@ public class Constants {
 
     // ─── SQLite Database ─────────────────────────────────────────────────────────
     public static final String DB_NAME    = "furnispace.db";
-    public static final int    DB_VERSION = 1;
+    public static final int    DB_VERSION = 2;
 
     // ─── SQLite Table Names ──────────────────────────────────────────────────────
     public static final String TABLE_PRODUCTS_CACHE  = "products_cache";

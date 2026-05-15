@@ -22,6 +22,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "email TEXT UNIQUE NOT NULL, " +
             "password TEXT NOT NULL, " +
             "address TEXT DEFAULT '', " +
+            "phone_number TEXT DEFAULT '', " +
             "default_payment TEXT DEFAULT ''" +
             ");"; 
 

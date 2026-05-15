@@ -17,7 +17,7 @@ public class BoardingActivity extends AppCompatActivity {
 
         Button btnGetStarted = findViewById(R.id.btn_get_started);
         btnGetStarted.setOnClickListener(v -> {
-            Intent intent = new Intent(BoardingActivity.this, LoginActivity.class);
+            Intent intent = new Intent(BoardingActivity.this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
