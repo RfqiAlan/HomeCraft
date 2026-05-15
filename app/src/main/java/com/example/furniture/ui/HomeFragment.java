@@ -61,6 +61,7 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
     private TextView tvError;
     private Button btnRefresh;
     private SwipeRefreshLayout swipeRefresh;
+    private android.view.View layoutEmptySearch;
 
     // ─── Data ─────────────────────────────────────────────────────────────────────
 
@@ -70,6 +71,11 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private Handler searchHandler = new Handler(Looper.getMainLooper());
     private Runnable searchRunnable;
+    
+    private String currentKeyword = Constants.DEFAULT_HOME_KEYWORD;
+    private int currentOffset = 0;
+    private boolean isLoading = false;
+    private boolean isLastPage = false;
 
     // ─── Lifecycle ───────────────────────────────────────────────────────────────
 
@@ -104,6 +110,7 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
         tvError       = view.findViewById(R.id.tv_error);
         btnRefresh    = view.findViewById(R.id.btn_refresh);
         swipeRefresh  = view.findViewById(R.id.swipe_refresh);
+        layoutEmptySearch = view.findViewById(R.id.layout_empty_search);
 
         // Setup Search and Filter
         if (etSearch != null) {
@@ -117,9 +124,17 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
                         searchHandler.removeCallbacks(searchRunnable);
                     }
                     searchRunnable = () -> {
-                        if (productAdapter != null) {
-                            productAdapter.filter(s.toString());
+                        String query = s.toString().trim();
+                        // Jika kosong, kembali ke keyword default rumahan
+                        // Jika ada query, inject keyword rumahan di belakang agar tidak keluar produk fashion
+                        if (query.isEmpty()) {
+                            currentKeyword = Constants.DEFAULT_HOME_KEYWORD;
+                        } else {
+                            currentKeyword = query + " home decor furniture";
                         }
+                        currentOffset = 0;
+                        isLastPage = false;
+                        loadProductsFromApi();
                     };
                     searchHandler.postDelayed(searchRunnable, 500);
                 }
@@ -165,8 +180,22 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
 
         // Setup RecyclerView dengan GridLayout 2 kolom
         productAdapter = new ProductAdapter(requireContext(), this);
-        recyclerView.setLayoutManager(new GridLayoutManager(requireContext(), 2));
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(requireContext(), 2);
+        recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.setAdapter(productAdapter);
+        
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy > 0 && !isLoading && !isLastPage) {
+                    if (gridLayoutManager.findLastCompletelyVisibleItemPosition() >= productAdapter.getItemCount() - 4) {
+                        currentOffset += Constants.DEFAULT_LIMIT;
+                        loadProductsFromApi();
+                    }
+                }
+            }
+        });
 
         // Setup DAO
         productDao = new ProductDao(DatabaseHelper.getInstance(requireContext()));
@@ -174,6 +203,8 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
         // Tombol refresh manual
         if (btnRefresh != null) {
             btnRefresh.setOnClickListener(v -> {
+                currentOffset = 0;
+                isLastPage = false;
                 loadProducts();
             });
         }
@@ -181,6 +212,8 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
         // Swipe to refresh
         if (swipeRefresh != null) {
             swipeRefresh.setOnRefreshListener(() -> {
+                currentOffset = 0;
+                isLastPage = false;
                 loadProductsFromApi();
             });
         }
@@ -205,19 +238,30 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
      * Ambil produk dari API Retrofit.
      */
     private void loadProductsFromApi() {
-        showLoading();
+        if (isLoading) return;
+        isLoading = true;
+
+        if (currentOffset == 0) {
+            showLoading();
+        } else {
+            if (swipeRefresh != null && !swipeRefresh.isRefreshing()) {
+                swipeRefresh.setRefreshing(true);
+            }
+        }
 
         ApiService apiService = RetrofitClient.getApiService();
         Call<ProductResponse> call = apiService.getProducts(
                 currentCategoryId,
+                currentKeyword,
                 Constants.DEFAULT_LIMIT,
-                Constants.DEFAULT_OFFSET,
+                currentOffset,
                 Constants.DEFAULT_SORT_ID);
 
         call.enqueue(new Callback<ProductResponse>() {
             @Override
             public void onResponse(@NonNull Call<ProductResponse> call,
                                    @NonNull Response<ProductResponse> response) {
+                isLoading = false;
                 hideLoading();
 
                 if (response.isSuccessful() && response.body() != null) {
@@ -227,36 +271,59 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
                             !body.getPayload().getProducts().isEmpty()) {
 
                         List<Product> products = body.getPayload().getProducts();
-                        productAdapter.setProducts(products);
-                        showContent();
+                        
+                        if (currentOffset == 0) {
+                            productAdapter.setProducts(products);
+                        } else {
+                            productAdapter.addProducts(products);
+                        }
 
-                        // Simpan ke SQLite di background thread hanya jika ini "All" / kategori utama
-                        if (currentCategoryId.equals(Constants.FURNITURE_CATEGORY_ID)) {
+                        if (products.size() < Constants.DEFAULT_LIMIT) {
+                            isLastPage = true;
+                        }
+
+                        showContent();
+                        if (layoutEmptySearch != null) layoutEmptySearch.setVisibility(android.view.View.GONE);
+                        if (recyclerView != null) recyclerView.setVisibility(android.view.View.VISIBLE);
+
+                        // Simpan ke SQLite di background thread hanya jika ini "All" / kategori utama dan bukan pencarian
+                        if (currentCategoryId.equals(Constants.FURNITURE_CATEGORY_ID) && currentKeyword.equals(Constants.DEFAULT_HOME_KEYWORD) && currentOffset == 0) {
                             saveProductsToLocal(products);
                         }
                     } else {
-                        if (currentCategoryId.equals(Constants.FURNITURE_CATEGORY_ID)) {
-                            loadProductsFromLocal();
-                        } else {
-                            showError("Tidak ada produk di kategori ini.");
+                        isLastPage = true;
+                        if (currentOffset == 0) {
+                            if (currentCategoryId.equals(Constants.FURNITURE_CATEGORY_ID) && currentKeyword.equals(Constants.DEFAULT_HOME_KEYWORD)) {
+                                loadProductsFromLocal();
+                            } else {
+                                // Pencarian tidak menemukan hasil - tampilkan empty state
+                                if (layoutEmptySearch != null) layoutEmptySearch.setVisibility(android.view.View.VISIBLE);
+                                if (recyclerView != null) recyclerView.setVisibility(android.view.View.GONE);
+                                hideLoading();
+                            }
                         }
                     }
                 } else {
-                    if (currentCategoryId.equals(Constants.FURNITURE_CATEGORY_ID)) {
-                        loadProductsFromLocal();
-                    } else {
-                        showError("Gagal memuat produk. Coba lagi.");
+                    if (currentOffset == 0) {
+                        if (currentCategoryId.equals(Constants.FURNITURE_CATEGORY_ID) && currentKeyword.equals(Constants.DEFAULT_HOME_KEYWORD)) {
+                            loadProductsFromLocal();
+                        } else {
+                            showError("Gagal memuat produk. Coba lagi.");
+                        }
                     }
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<ProductResponse> call, @NonNull Throwable t) {
+                isLoading = false;
                 hideLoading();
-                if (currentCategoryId.equals(Constants.FURNITURE_CATEGORY_ID)) {
-                    loadProductsFromLocal();
-                } else {
-                    showError("Gagal terhubung ke server.");
+                if (currentOffset == 0) {
+                    if (currentCategoryId.equals(Constants.FURNITURE_CATEGORY_ID) && currentKeyword.equals(Constants.DEFAULT_HOME_KEYWORD)) {
+                        loadProductsFromLocal();
+                    } else {
+                        showError("Gagal terhubung ke server.");
+                    }
                 }
             }
         });

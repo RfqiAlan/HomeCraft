@@ -189,6 +189,7 @@ public class CategoryFragment extends Fragment
         ApiService apiService = RetrofitClient.getApiService();
         Call<com.example.furniture.model.ProductResponse> call =
                 apiService.getProducts(category.getId(),
+                        null,
                         Constants.DEFAULT_LIMIT,
                         Constants.DEFAULT_OFFSET,
                         Constants.DEFAULT_SORT_ID);

@@ -67,8 +67,14 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
      * Mengganti seluruh data produk dan refresh tampilan.
      */
     public void setProducts(List<Product> products) {
-        this.productList = products != null ? new ArrayList<>(products) : new ArrayList<>();
         this.originalProductList = products != null ? new ArrayList<>(products) : new ArrayList<>();
+        
+        // Tampilkan maksimal 30 item untuk beranda (default view)
+        if (products != null && products.size() > 30) {
+            this.productList = new ArrayList<>(products.subList(0, 30));
+        } else {
+            this.productList = products != null ? new ArrayList<>(products) : new ArrayList<>();
+        }
         notifyDataSetChanged();
     }
 
@@ -93,7 +99,12 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     public void filter(String query) {
         if (query == null || query.trim().isEmpty()) {
             productList.clear();
-            productList.addAll(originalProductList);
+            // Jika pencarian kosong, kembali tampilkan hanya 30 item pertama
+            if (originalProductList.size() > 30) {
+                productList.addAll(originalProductList.subList(0, 30));
+            } else {
+                productList.addAll(originalProductList);
+            }
         } else {
             String lowerCaseQuery = query.toLowerCase(Locale.getDefault());
             List<Product> filteredList = new ArrayList<>();
@@ -133,8 +144,18 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         }
 
         if (comparator != null) {
-            Collections.sort(productList, comparator);
             Collections.sort(originalProductList, comparator);
+            
+            // Setelah sorting, update productList. 
+            // Jika sedang tidak mencari, tampilkan 30 teratas.
+            // Jika sedang mencari, biarkan filter yang menangani atau tampilkan semua hasil sort?
+            // Kita asumsikan update tampilan utama:
+            productList.clear();
+            if (originalProductList.size() > 30) {
+                productList.addAll(originalProductList.subList(0, 30));
+            } else {
+                productList.addAll(originalProductList);
+            }
             notifyDataSetChanged();
         }
     }

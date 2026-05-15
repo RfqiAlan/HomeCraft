@@ -35,15 +35,16 @@ public class Constants {
     public static final String THEME_DARK      = "dark";
     public static final String THEME_LIGHT     = "light";
 
-    // ─── Category ────────────────────────────────────────────────────────────────
-    // ID kategori "Furniture" hasil pencarian pada endpoint categories/list Kohls.
-    public static final String FURNITURE_CATEGORY_ID   = "1381075460323";
-    public static final String FURNITURE_CATEGORY_NAME = "Furniture";
+    // ID kategori "Home" hasil pencarian pada endpoint categories/list Kohls.
+    public static final String FURNITURE_CATEGORY_ID   = "1778712552738";
+    public static final String FURNITURE_CATEGORY_NAME = "Home";
 
     // ─── Products/list defaults ─────────────────────────────────────────────────
-    public static final int DEFAULT_LIMIT    = 24;
-    public static final int DEFAULT_OFFSET   = 0;
-    public static final int DEFAULT_SORT_ID  = 0;
+    public static final int    DEFAULT_LIMIT        = 24;
+    public static final int    DEFAULT_OFFSET       = 0;
+    public static final int    DEFAULT_SORT_ID      = 0;
+    // Keyword default agar API selalu mengembalikan produk rumahan, bukan fashion
+    public static final String DEFAULT_HOME_KEYWORD = "home decor furniture";
 
     // ─── Reviews / QnAs defaults ────────────────────────────────────────────────
     public static final int    DEFAULT_REVIEW_LIMIT = 10;

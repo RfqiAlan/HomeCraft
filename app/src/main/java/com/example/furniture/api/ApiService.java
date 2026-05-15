@@ -37,6 +37,7 @@ public interface ApiService {
     @GET("products/list")
     Call<ProductResponse> getProducts(
             @Query("categoryID") String categoryId,
+            @Query("keyword") String keyword,
             @Query("limit") int limit,
             @Query("offset") int offset,
             @Query("sortID") int sortId

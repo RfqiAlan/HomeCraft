@@ -122,6 +122,45 @@
                 app:layout_constraintTop_toBottomOf="@id/layout_search_filter"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
+            <!-- Empty State: muncul saat hasil pencarian kosong -->
+            <LinearLayout
+                android:id="@+id/layout_empty_search"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="64dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/layout_search_filter">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="&#128269;"
+                    android:textSize="48sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Produk tidak ditemukan"
+                    android:textColor="#212121"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-medium" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Coba cari dengan kata kunci lain"
+                    android:textColor="#A0A0A0"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+
             <ProgressBar
                 android:id="@+id/progress_bar"
                 android:layout_width="wrap_content"
