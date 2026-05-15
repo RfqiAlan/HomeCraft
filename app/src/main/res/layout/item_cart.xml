@@ -35,6 +35,8 @@
         android:text="Minimal Stand"
         android:textColor="#808080"
         android:textSize="14sp"
+        android:maxLines="2"
+        android:ellipsize="end"
         app:layout_constraintEnd_toStartOf="@id/btn_remove_cart"
         app:layout_constraintStart_toEndOf="@id/cv_image"
         app:layout_constraintTop_toTopOf="@id/cv_image" />
@@ -65,12 +67,14 @@
 
     <!-- Quantity Selector -->
     <LinearLayout
+        android:id="@+id/ll_quantity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="@id/cv_image"
+        app:layout_constraintTop_toBottomOf="@id/tv_cart_price"
         app:layout_constraintStart_toEndOf="@id/cv_image">
 
         <com.google.android.material.button.MaterialButton
@@ -126,7 +130,14 @@
         android:layout_height="wrap_content"
         android:visibility="gone"
         app:layout_constraintStart_toEndOf="@id/cv_image"
-        app:layout_constraintTop_toBottomOf="@id/cv_image" />
+        app:layout_constraintTop_toBottomOf="@id/ll_quantity" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier_bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="cv_image,ll_quantity" />
 
     <!-- Divider Line -->
     <View
@@ -134,7 +145,7 @@
         android:layout_height="1dp"
         android:layout_marginTop="16dp"
         android:background="#E0E0E0"
-        app:layout_constraintTop_toBottomOf="@id/cv_image"
+        app:layout_constraintTop_toBottomOf="@id/barrier_bottom"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

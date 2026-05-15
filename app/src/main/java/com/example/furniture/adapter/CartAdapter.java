@@ -106,8 +106,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         private final TextView tvPrice;
         private final TextView tvQuantity;
         private final TextView tvTotalPrice;
-        private final ImageButton btnIncrease;
-        private final ImageButton btnDecrease;
+        private final com.google.android.material.button.MaterialButton btnIncrease;
+        private final com.google.android.material.button.MaterialButton btnDecrease;
         private final ImageButton btnRemove;
 
         CartViewHolder(@NonNull View itemView) {
