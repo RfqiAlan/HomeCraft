@@ -171,8 +171,8 @@
                                 app:iconGravity="textStart"
                                 android:insetTop="0dp"
                                 android:insetBottom="0dp"
-                                android:paddingStart="8dp"
-                                android:paddingEnd="8dp"
+                                android:padding="0dp"
+                                app:iconPadding="0dp"
                                 style="@style/Widget.MaterialComponents.Button" />
 
                             <TextView
@@ -198,8 +198,8 @@
                                 app:iconGravity="textStart"
                                 android:insetTop="0dp"
                                 android:insetBottom="0dp"
-                                android:paddingStart="8dp"
-                                android:paddingEnd="8dp"
+                                android:padding="0dp"
+                                app:iconPadding="0dp"
                                 style="@style/Widget.MaterialComponents.Button" />
                         </LinearLayout>
                     </LinearLayout>

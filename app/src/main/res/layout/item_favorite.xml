@@ -64,22 +64,22 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/cv_image" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_add_to_cart_item"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        app:backgroundTint="?attr/colorSurfaceVariant"
-        app:cornerRadius="8dp"
-        app:elevation="0dp"
-        app:icon="@drawable/ic_cart"
-        app:iconTint="?android:attr/textColorPrimary"
-        app:iconSize="16dp"
-        app:iconGravity="textStart"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        style="@style/Widget.MaterialComponents.Button"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_add_to_cart_item"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            app:backgroundTint="?attr/colorSurfaceVariant"
+            app:cornerRadius="8dp"
+            app:elevation="0dp"
+            app:icon="@drawable/ic_cart"
+            app:iconTint="?android:attr/textColorPrimary"
+            app:iconSize="16dp"
+            app:iconGravity="textStart"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:padding="0dp"
+            app:iconPadding="0dp"
+            style="@style/Widget.MaterialComponents.Button"
         app:layout_constraintBottom_toBottomOf="@id/cv_image"
         app:layout_constraintEnd_toEndOf="parent" />
 
