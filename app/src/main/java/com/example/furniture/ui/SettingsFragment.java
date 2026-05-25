@@ -1,6 +1,7 @@
 package com.example.furniture.ui;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -459,29 +460,46 @@ public class SettingsFragment extends Fragment {
     // ─── Language ─────────────────────────────────────────────────────────────────
 
     /**
-     * Simpan bahasa baru, fetch kurs terbaru jika ganti ke ID, lalu recreate activity.
+     * Simpan bahasa baru, fetch kurs terbaru jika ganti ke ID, lalu restart seluruh stack
+     * ke MainActivity agar semua Activity memuat ulang locale dari awal.
+     *
+     * Tidak menggunakan recreate() karena Activity lain di back stack (Detail, Checkout, dll.)
+     * tidak override attachBaseContext sehingga locale-nya tidak berubah dan menyebabkan crash.
      */
     private void switchLanguage(String langCode) {
         String current = LanguageManager.getLanguage(requireContext());
-        if (current.equals(langCode)) return; // Tidak perlu recreate jika sama
+        if (current.equals(langCode)) return; // Tidak perlu restart jika bahasa sama
 
         LanguageManager.saveLanguage(requireContext(), langCode);
 
-        // Fetch kurs terbaru saat ganti ke Indonesia
+        // Fetch kurs terbaru saat ganti ke Indonesia, lalu restart
         if (Constants.LANG_ID.equals(langCode)) {
             ExchangeRateManager.fetchRate(requireContext(), new ExchangeRateManager.OnRateFetchedListener() {
                 @Override
                 public void onSuccess(double idrRate) {
-                    if (getActivity() != null) getActivity().recreate();
+                    restartApp();
                 }
                 @Override
                 public void onFailure(double fallbackRate) {
-                    if (getActivity() != null) getActivity().recreate();
+                    restartApp();
                 }
             });
         } else {
-            if (getActivity() != null) getActivity().recreate();
+            restartApp();
         }
+    }
+
+    /**
+     * Restart seluruh stack Activity ke MainActivity dengan locale baru.
+     * FLAG_ACTIVITY_CLEAR_TASK memastikan semua Activity lama dihancurkan,
+     * sehingga tidak ada Activity yang masih memakai locale lama.
+     */
+    private void restartApp() {
+        if (getActivity() == null) return;
+        Intent intent = new Intent(getActivity(), MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        // Tidak perlu finish() — FLAG_ACTIVITY_CLEAR_TASK sudah menghancurkan semua Activity
     }
 
     /**
@@ -491,30 +509,46 @@ public class SettingsFragment extends Fragment {
         if (btnLangEn == null || btnLangId == null || getContext() == null) return;
         boolean isId = LanguageManager.isIndonesian(requireContext());
 
+        // Resolve dynamic colors from current theme
+        int activeBgColor = 0;
+        int activeTextColor = 0;
+        android.util.TypedValue typedValue = new android.util.TypedValue();
+        
+        if (requireContext().getTheme().resolveAttribute(android.R.attr.textColorPrimary, typedValue, true)) {
+            activeBgColor = typedValue.data; // Active background (black in light, white in dark)
+        } else {
+            activeBgColor = androidx.core.content.ContextCompat.getColor(requireContext(), android.R.color.black);
+        }
+        
+        if (requireContext().getTheme().resolveAttribute(android.R.attr.colorBackground, typedValue, true)) {
+            activeTextColor = typedValue.data; // Active text (white in light, black in dark)
+        } else {
+            activeTextColor = android.graphics.Color.WHITE;
+        }
+        
+        int inactiveTextColor = 0;
+        if (requireContext().getTheme().resolveAttribute(android.R.attr.textColorSecondary, typedValue, true)) {
+            inactiveTextColor = typedValue.data;
+        } else {
+            inactiveTextColor = androidx.core.content.ContextCompat.getColor(requireContext(), android.R.color.darker_gray);
+        }
+
         // Tombol EN
         if (isId) {
             btnLangEn.setBackgroundTintList(null);
-            btnLangEn.setTextColor(getResources().getColor(
-                    android.R.color.darker_gray, requireContext().getTheme()));
+            btnLangEn.setTextColor(inactiveTextColor);
         } else {
-            btnLangEn.setBackgroundTintList(
-                    android.content.res.ColorStateList.valueOf(
-                            androidx.core.content.ContextCompat.getColor(
-                                    requireContext(), android.R.color.black)));
-            btnLangEn.setTextColor(android.graphics.Color.WHITE);
+            btnLangEn.setBackgroundTintList(android.content.res.ColorStateList.valueOf(activeBgColor));
+            btnLangEn.setTextColor(activeTextColor);
         }
 
         // Tombol ID
         if (isId) {
-            btnLangId.setBackgroundTintList(
-                    android.content.res.ColorStateList.valueOf(
-                            androidx.core.content.ContextCompat.getColor(
-                                    requireContext(), android.R.color.black)));
-            btnLangId.setTextColor(android.graphics.Color.WHITE);
+            btnLangId.setBackgroundTintList(android.content.res.ColorStateList.valueOf(activeBgColor));
+            btnLangId.setTextColor(activeTextColor);
         } else {
             btnLangId.setBackgroundTintList(null);
-            btnLangId.setTextColor(getResources().getColor(
-                    android.R.color.darker_gray, requireContext().getTheme()));
+            btnLangId.setTextColor(inactiveTextColor);
         }
     }
 

@@ -12,7 +12,7 @@
         android:layout_width="40dp"
         android:layout_height="4dp"
         android:layout_gravity="center_horizontal"
-        android:background="#E0E0E0"
+        android:background="@color/divider_color"
         android:layout_marginBottom="16dp"/>
 
     <TextView
@@ -35,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
-            android:buttonTint="#1A1A1A"
+            android:buttonTint="@color/radio_button_tint"
             android:text="Harga: Terendah ke Tertinggi"
             android:textColor="?android:attr/textColorPrimary"
             android:textSize="16sp" />
@@ -45,7 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
-            android:buttonTint="#1A1A1A"
+            android:buttonTint="@color/radio_button_tint"
             android:text="Harga: Tertinggi ke Terendah"
             android:textColor="?android:attr/textColorPrimary"
             android:textSize="16sp" />
@@ -55,7 +55,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
-            android:buttonTint="#1A1A1A"
+            android:buttonTint="@color/radio_button_tint"
             android:text="Rating: Tertinggi"
             android:textColor="?android:attr/textColorPrimary"
             android:textSize="16sp" />
@@ -64,7 +64,7 @@
             android:id="@+id/rb_rating_asc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:buttonTint="#1A1A1A"
+            android:buttonTint="@color/radio_button_tint"
             android:text="Rating: Terendah"
             android:textColor="?android:attr/textColorPrimary"
             android:textSize="16sp" />

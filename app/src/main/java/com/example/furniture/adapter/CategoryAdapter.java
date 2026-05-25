@@ -92,21 +92,33 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         void bind(Category category, boolean isSelected) {
             tvCategoryName.setText(category.getName());
 
+            // Resolve dynamic text colors from active theme
+            int textColorPrimary = 0;
+            int textColorSecondary = 0;
+            android.util.TypedValue typedValue = new android.util.TypedValue();
+            if (context.getTheme().resolveAttribute(android.R.attr.textColorPrimary, typedValue, true)) {
+                textColorPrimary = typedValue.data;
+            } else {
+                textColorPrimary = ContextCompat.getColor(context, android.R.color.black);
+            }
+            if (context.getTheme().resolveAttribute(android.R.attr.textColorSecondary, typedValue, true)) {
+                textColorSecondary = typedValue.data;
+            } else {
+                textColorSecondary = ContextCompat.getColor(context, android.R.color.darker_gray);
+            }
+
             // Update background & icon tint berdasarkan state
             if (isSelected) {
                 flCategoryIcon.setBackground(
                         ContextCompat.getDrawable(context, R.drawable.bg_category_selected));
                 imgCategoryIcon.setColorFilter(
-                        ContextCompat.getColor(context, android.R.color.white));
-                tvCategoryName.setTextColor(
-                        ContextCompat.getColor(context, android.R.color.black));
+                        ContextCompat.getColor(context, R.color.category_selected_icon));
+                tvCategoryName.setTextColor(textColorPrimary);
             } else {
                 flCategoryIcon.setBackground(
                         ContextCompat.getDrawable(context, R.drawable.bg_category_unselected));
-                imgCategoryIcon.setColorFilter(
-                        ContextCompat.getColor(context, android.R.color.darker_gray));
-                tvCategoryName.setTextColor(
-                        ContextCompat.getColor(context, android.R.color.darker_gray));
+                imgCategoryIcon.setColorFilter(textColorSecondary);
+                tvCategoryName.setTextColor(textColorSecondary);
             }
 
             // Klik item kategori

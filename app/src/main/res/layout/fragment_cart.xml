@@ -15,6 +15,7 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
         android:src="@drawable/ic_back"
+        app:tint="?android:attr/textColorPrimary"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -26,11 +27,23 @@
         android:textColor="?android:attr/textColorPrimary"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:fontFamily="serif"
         app:layout_constraintBottom_toBottomOf="@id/btn_back"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/btn_back" />
+
+    <ImageView
+        android:id="@+id/btn_share_cart"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="24dp"
+        android:src="@drawable/ic_share"
+        app:tint="?android:attr/textColorPrimary"
+        android:contentDescription="Bagikan keranjang ini"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/btn_back" />
 
     <!-- RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView

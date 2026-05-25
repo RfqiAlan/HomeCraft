@@ -15,6 +15,7 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
         android:src="@drawable/ic_search"
+        app:tint="?android:attr/textColorPrimary"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -26,7 +27,6 @@
         android:textColor="?android:attr/textColorPrimary"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:fontFamily="serif"
         app:layout_constraintBottom_toBottomOf="@id/btn_search"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -56,7 +56,6 @@
         android:textColor="?android:attr/textColorPrimary"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:fontFamily="serif"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/rv_categories" />
 

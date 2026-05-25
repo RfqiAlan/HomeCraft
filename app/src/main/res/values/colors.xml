@@ -2,4 +2,16 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    
+    <!-- Day theme specific values -->
+    <color name="search_bg">#F5F5F5</color>
+    <color name="category_selected_bg">#212121</color>
+    <color name="category_unselected_bg">#F2F2F2</color>
+    <color name="divider_color">#E0E0E0</color>
+    <color name="bottom_sheet_bg">#FFFFFF</color>
+    <color name="radio_button_tint">#1A1A1A</color>
+    <color name="logout_bg_tint">#FFF1F1</color>
+    <color name="badge_recommend_bg">#F0F9F0</color>
+    <color name="window_background">#FAFAFA</color>
+    <color name="category_selected_icon">#FFFFFF</color>
 </resources>

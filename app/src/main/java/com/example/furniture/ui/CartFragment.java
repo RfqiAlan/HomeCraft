@@ -92,6 +92,11 @@ public class CartFragment extends Fragment implements CartAdapter.OnCartActionLi
         if (btnCheckout != null) {
             btnCheckout.setOnClickListener(v -> goToCheckout());
         }
+        
+        View btnShareCart = view.findViewById(R.id.btn_share_cart);
+        if (btnShareCart != null) {
+            btnShareCart.setOnClickListener(v -> shareCart());
+        }
     }
 
     // ─── Load Data ───────────────────────────────────────────────────────────────
@@ -128,6 +133,35 @@ public class CartFragment extends Fragment implements CartAdapter.OnCartActionLi
         }
         Intent intent = new Intent(requireContext(), CheckoutActivity.class);
         startActivity(intent);
+    }
+
+    private void shareCart() {
+        if (cartAdapter.isEmpty()) {
+            Toast.makeText(requireContext(), "Keranjang belanja Anda kosong.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        executor.execute(() -> {
+            List<CartItem> items = cartDao.getCartItems();
+            int totalItems = 0;
+            for (CartItem item : items) {
+                totalItems += item.getQuantity();
+            }
+            
+            final int count = totalItems;
+            
+            requireActivity().runOnUiThread(() -> {
+                String shareUrl = "http://homecraft.com/cart";
+                String shareText = "Saya punya " + count + " item menarik di keranjang HomeCraft saya! Yuk, intip keranjangnya:\n" + shareUrl;
+
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setType("text/plain");
+                shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Keranjang Belanja HomeCraft Saya");
+                shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
+
+                startActivity(Intent.createChooser(shareIntent, "Bagikan keranjang via..."));
+            });
+        });
     }
 
     // ─── UI State ────────────────────────────────────────────────────────────────

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FAFAFA"
+    android:background="@color/window_background"
     android:fillViewport="true">
 
     <LinearLayout
@@ -26,7 +26,7 @@
                 android:layout_width="0dp"
                 android:layout_height="1dp"
                 android:layout_weight="1"
-                android:background="#D0D0D0" />
+                android:background="@color/divider_color" />
 
             <ImageView
                 android:layout_width="72dp"
@@ -42,7 +42,7 @@
                 android:layout_width="0dp"
                 android:layout_height="1dp"
                 android:layout_weight="1"
-                android:background="#D0D0D0" />
+                android:background="@color/divider_color" />
         </LinearLayout>
 
         <!-- ── Title ── -->
@@ -52,7 +52,6 @@
             android:text="Hello !"
             android:textSize="26sp"
             android:textColor="#9E9E9E"
-            android:fontFamily="sans-serif"
             android:layout_marginBottom="4dp" />
 
         <TextView
@@ -62,7 +61,6 @@
             android:textSize="26sp"
             android:textStyle="bold"
             android:textColor="?android:attr/textColorPrimary"
-            android:fontFamily="sans-serif-condensed"
             android:layout_marginBottom="28dp" />
 
         <!-- ── Form Card ── -->
@@ -103,7 +101,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#E0E0E0"
+                    android:background="@color/divider_color"
                     android:layout_marginBottom="20dp" />
 
                 <!-- Password Field -->
@@ -144,7 +142,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#E0E0E0"
+                    android:background="@color/divider_color"
                     android:layout_marginBottom="20dp" />
 
                 <!-- Forgot Password -->
@@ -153,7 +151,7 @@
                     android:layout_height="wrap_content"
                     android:text="Forgot Password"
                     android:gravity="center"
-                    android:textColor="#666666"
+                    android:textColor="?android:attr/textColorSecondary"
                     android:textSize="13sp"
                     android:padding="8dp"
                     android:layout_marginBottom="20dp" />
@@ -183,6 +181,51 @@
                     style="@style/Widget.MaterialComponents.Button"
                     android:layout_marginBottom="16dp"
                     android:stateListAnimator="@null" />
+
+                <!-- Fingerprint Login Button -->
+                <LinearLayout
+                    android:id="@+id/layout_fingerprint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/divider_color"
+                        android:layout_marginBottom="16dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="atau masuk dengan"
+                        android:textColor="#9E9E9E"
+                        android:textSize="12sp"
+                        android:layout_marginBottom="12dp"/>
+
+                    <ImageButton
+                        android:id="@+id/btn_fingerprint"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:src="@drawable/ic_fingerprint"
+                        android:background="@drawable/bg_fingerprint_button"
+                        android:padding="16dp"
+                        android:scaleType="fitCenter"
+                        android:contentDescription="Login dengan Sidik Jari"
+                        android:elevation="2dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sidik Jari"
+                        android:textColor="#9E9E9E"
+                        android:textSize="11sp"
+                        android:layout_marginTop="6dp"/>
+
+                </LinearLayout>
 
                 <!-- Go to Register -->
                 <TextView

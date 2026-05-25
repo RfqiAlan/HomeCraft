@@ -138,6 +138,9 @@ public class DetailActivity extends AppCompatActivity {
         if (btnFavorite  != null) btnFavorite.setOnClickListener(v -> toggleFavorite());
         if (btnSeeReviews != null) btnSeeReviews.setOnClickListener(v -> openReviews());
 
+        View btnShare = findViewById(R.id.btn_share);
+        if (btnShare != null) btnShare.setOnClickListener(v -> shareProduct());
+
         if (btnQtyPlus != null) btnQtyPlus.setOnClickListener(v -> {
             qty++;
             tvQty.setText(String.format("%02d", qty));
@@ -356,6 +359,24 @@ public class DetailActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ReviewActivity.class);
         intent.putExtra(Constants.EXTRA_PRODUCT_ID, productId);
         startActivity(intent);
+    }
+
+    // ─── Share ───────────────────────────────────────────────────────────────────
+
+    private void shareProduct() {
+        if (currentProduct == null) return;
+        
+        String productName = currentProduct.getName();
+        String shareUrl = "http://homecraft.com/product/" + productId;
+        
+        String shareText = "Lihat produk keren ini: " + productName + "!\nBuka di aplikasi HomeCraft:\n" + shareUrl;
+        
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Rekomendasi Produk: " + productName);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
+        
+        startActivity(Intent.createChooser(shareIntent, "Bagikan produk via..."));
     }
 
     // ─── Cart ────────────────────────────────────────────────────────────────────

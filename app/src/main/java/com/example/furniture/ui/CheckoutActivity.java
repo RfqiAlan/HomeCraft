@@ -215,11 +215,64 @@ public class CheckoutActivity extends AppCompatActivity {
      */
     private void setupPaymentMethods() {
         if (rgPaymentMethod == null) return;
+        
+        // Buat layout params untuk RadioButton agar terpisah-pisah membentuk Card
+        RadioGroup.LayoutParams params = new RadioGroup.LayoutParams(
+                RadioGroup.LayoutParams.MATCH_PARENT,
+                RadioGroup.LayoutParams.WRAP_CONTENT
+        );
+        params.setMargins(0, 0, 0, (int) (12 * getResources().getDisplayMetrics().density));
+
         for (String method : Constants.PAYMENT_METHODS) {
             RadioButton rb = new RadioButton(this);
             rb.setId(View.generateViewId());
             rb.setText(method);
-            rb.setPadding(8, 16, 8, 16);
+            rb.setLayoutParams(params);
+            
+            // Atur background selector & text color selector
+            rb.setBackgroundResource(R.drawable.bg_payment_method_option);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                rb.setTextColor(getResources().getColorStateList(R.color.text_color_payment_option, getTheme()));
+            } else {
+                rb.setTextColor(getResources().getColorStateList(R.color.text_color_payment_option));
+            }
+            
+            // Hilangkan bulatan radio bawaan
+            rb.setButtonDrawable(null);
+            
+            // Berikan padding yang proporsional
+            int padHorizontal = (int) (16 * getResources().getDisplayMetrics().density);
+            int padVertical = (int) (16 * getResources().getDisplayMetrics().density);
+            rb.setPadding(padHorizontal, padVertical, padHorizontal, padVertical);
+            
+            // Pilih ikon kustom berdasarkan metode pembayaran
+            int iconRes = R.drawable.ic_payment_cash; // Default fallback
+            switch (method) {
+                case "Cash on Delivery":
+                    iconRes = R.drawable.ic_payment_cash;
+                    break;
+                case "Bank Transfer":
+                    iconRes = R.drawable.ic_payment_bank;
+                    break;
+                case "E-Wallet":
+                    iconRes = R.drawable.ic_payment_wallet;
+                    break;
+                case "Virtual Account":
+                case "Credit/Debit Card":
+                    iconRes = R.drawable.ic_mastercard; // Gunakan Mastercard yang sudah ada
+                    break;
+                case "NFC Payment":
+                    iconRes = R.drawable.ic_payment_nfc;
+                    break;
+            }
+            
+            // Terapkan ikon di sebelah kiri teks
+            rb.setCompoundDrawablesWithIntrinsicBounds(iconRes, 0, 0, 0);
+            rb.setCompoundDrawablePadding((int) (12 * getResources().getDisplayMetrics().density));
+            
+            // Berikan sedikit ketebalan pada text
+            rb.setTypeface(null, android.graphics.Typeface.BOLD);
+            
             rgPaymentMethod.addView(rb);
         }
 

@@ -16,25 +16,27 @@
         android:padding="20dp"
         android:visibility="visible">
 
-        <!-- Header -->
+        <!-- Premium Header -->
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp">
+            android:layout_height="64dp"
+            android:layout_marginBottom="16dp">
             
             <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:src="@drawable/ic_back"
-                android:layout_centerVertical="true" />
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:padding="8dp"
+                android:layout_centerVertical="true"
+                android:contentDescription="Kembali" />
                 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Check out"
-                android:textSize="18sp"
+                android:text="Checkout"
+                android:textSize="20sp"
                 android:textStyle="bold"
-                android:fontFamily="serif"
                 android:textColor="?android:attr/textColorPrimary"
                 android:layout_centerInParent="true" />
         </RelativeLayout>
@@ -43,7 +45,8 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:fillViewport="true">
+            android:fillViewport="true"
+            android:scrollbars="none">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -54,28 +57,34 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp">
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp">
                     
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Shipping Address"
                         android:textColor="?android:attr/textColorSecondary"
-                        android:textSize="16sp" />
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.03" />
                         
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:src="@drawable/ic_edit"
+                        app:tint="?android:attr/textColorSecondary"
                         android:layout_alignParentEnd="true" />
                 </RelativeLayout>
 
-                <androidx.cardview.widget.CardView
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.Material3.CardView.Outlined"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:cardCornerRadius="8dp"
-                    app:cardElevation="2dp"
-                    android:layout_marginBottom="24dp">
+                    app:cardCornerRadius="16dp"
+                    app:strokeColor="#26888888"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    android:layout_marginBottom="20dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -83,20 +92,34 @@
                         android:orientation="vertical"
                         android:padding="16dp">
 
-                        <TextView
-                            android:id="@+id/tv_checkout_user_name"
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Bruno Fernandes"
-                            android:textColor="?android:attr/textColorPrimary"
-                            android:textStyle="bold"
-                            android:textSize="16sp"
-                            android:layout_marginBottom="12dp" />
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="12dp">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_user"
+                                app:tint="?android:attr/textColorPrimary" />
+
+                            <TextView
+                                android:id="@+id/tv_checkout_user_name"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Bruno Fernandes"
+                                android:textColor="?android:attr/textColorPrimary"
+                                android:textStyle="bold"
+                                android:textSize="15sp"
+                                android:layout_marginStart="10dp" />
+                        </LinearLayout>
 
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
-                            android:background="#E0E0E0"
+                            android:background="#1A888888"
                             android:layout_marginBottom="12dp" />
 
                         <LinearLayout
@@ -104,6 +127,12 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_location"
+                                app:tint="?android:attr/textColorSecondary" />
 
                             <EditText
                                 android:id="@+id/et_shipping_address"
@@ -114,21 +143,24 @@
                                 android:text="25 rue Robert Latouche, Nice, 06200, Côte D'azur, France"
                                 android:textColor="?android:attr/textColorSecondary"
                                 android:textSize="14sp"
-                                android:lineSpacingExtra="4dp" />
+                                android:lineSpacingExtra="4dp"
+                                android:layout_marginStart="10dp"
+                                android:inputType="textPostalAddress|textMultiLine"
+                                android:maxLines="3" />
 
                             <ImageButton
                                 android:id="@+id/btn_use_location_checkout"
-                                android:layout_width="36dp"
-                                android:layout_height="36dp"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
                                 android:src="@drawable/ic_location"
                                 android:background="?android:attr/selectableItemBackgroundBorderless"
                                 android:contentDescription="Gunakan Lokasi GPS"
-                                app:tint="?android:attr/textColorSecondary"
+                                app:tint="?android:attr/textColorPrimary"
                                 android:layout_marginStart="8dp" />
                         </LinearLayout>
                     </LinearLayout>
 
-                </androidx.cardview.widget.CardView>
+                </com.google.android.material.card.MaterialCardView>
 
                 <!-- Payment Section -->
                 <RelativeLayout
@@ -139,23 +171,28 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Payment"
+                        android:text="Payment Method"
                         android:textColor="?android:attr/textColorSecondary"
-                        android:textSize="16sp" />
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.03" />
                         
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:src="@drawable/ic_edit"
+                        app:tint="?android:attr/textColorSecondary"
                         android:layout_alignParentEnd="true" />
                 </RelativeLayout>
 
-                <androidx.cardview.widget.CardView
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.Material3.CardView.Outlined"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:cardCornerRadius="8dp"
-                    app:cardElevation="2dp"
-                    android:layout_marginBottom="24dp">
+                    app:cardCornerRadius="16dp"
+                    app:strokeColor="#26888888"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    android:layout_marginBottom="20dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -163,44 +200,14 @@
                         android:orientation="vertical"
                         android:padding="16dp">
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical">
-
-                            <androidx.cardview.widget.CardView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                app:cardCornerRadius="4dp"
-                                app:cardElevation="0dp">
-                                <ImageView
-                                    android:layout_width="48dp"
-                                    android:layout_height="32dp"
-                                    android:background="?attr/colorSurfaceVariant"
-                                    android:src="@drawable/ic_mastercard"
-                                    android:padding="4dp"
-                                    android:scaleType="fitCenter" />
-                            </androidx.cardview.widget.CardView>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="**** **** **** 3947"
-                                android:textColor="?android:attr/textColorPrimary"
-                                android:layout_marginStart="16dp"
-                                android:textStyle="bold"
-                                android:textSize="14sp" />
-                        </LinearLayout>
-
-                        <!-- RadioGroup added dynamically by CheckoutActivity -->
+                        <!-- RadioGroup populated dynamically with selectable Cards in CheckoutActivity -->
                         <RadioGroup
                             android:id="@+id/rg_payment_method"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp" />
+                            android:scrollbars="none" />
                     </LinearLayout>
-                </androidx.cardview.widget.CardView>
+                </com.google.android.material.card.MaterialCardView>
 
                 <!-- Phone Number Section -->
                 <RelativeLayout
@@ -213,27 +220,39 @@
                         android:layout_height="wrap_content"
                         android:text="Phone Number"
                         android:textColor="?android:attr/textColorSecondary"
-                        android:textSize="16sp" />
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.03" />
                         
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:src="@drawable/ic_edit"
+                        app:tint="?android:attr/textColorSecondary"
                         android:layout_alignParentEnd="true" />
                 </RelativeLayout>
 
-                <androidx.cardview.widget.CardView
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.Material3.CardView.Outlined"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:cardCornerRadius="8dp"
-                    app:cardElevation="2dp"
-                    android:layout_marginBottom="24dp">
+                    app:cardCornerRadius="16dp"
+                    app:strokeColor="#26888888"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    android:layout_marginBottom="20dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
                         android:padding="16dp">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_person"
+                            app:tint="?android:attr/textColorSecondary" />
 
                         <EditText
                             android:id="@+id/et_phone_number"
@@ -242,10 +261,11 @@
                             android:background="@null"
                             android:hint="08123456789"
                             android:inputType="phone"
-                            android:textColor="?android:attr/textColorSecondary"
-                            android:textSize="14sp" />
+                            android:textColor="?android:attr/textColorPrimary"
+                            android:textSize="14sp"
+                            android:layout_marginStart="10dp" />
                     </LinearLayout>
-                </androidx.cardview.widget.CardView>
+                </com.google.android.material.card.MaterialCardView>
 
                 <!-- Delivery Method Section -->
                 <RelativeLayout
@@ -256,23 +276,28 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Delivery method"
+                        android:text="Delivery Method"
                         android:textColor="?android:attr/textColorSecondary"
-                        android:textSize="16sp" />
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.03" />
                         
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:src="@drawable/ic_edit"
+                        app:tint="?android:attr/textColorSecondary"
                         android:layout_alignParentEnd="true" />
                 </RelativeLayout>
 
-                <androidx.cardview.widget.CardView
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.Material3.CardView.Outlined"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:cardCornerRadius="8dp"
-                    app:cardElevation="2dp"
-                    android:layout_marginBottom="24dp">
+                    app:cardCornerRadius="16dp"
+                    app:strokeColor="#26888888"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    android:layout_marginBottom="20dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -282,21 +307,21 @@
                         android:gravity="center_vertical">
 
                         <ImageView
-                            android:layout_width="60dp"
-                            android:layout_height="20dp"
+                            android:layout_width="48dp"
+                            android:layout_height="24dp"
                             android:src="@drawable/ic_dhl"
                             android:scaleType="fitCenter" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Fast (2-3days)"
+                            android:text="Fast (2-3 days)"
                             android:textColor="?android:attr/textColorPrimary"
                             android:layout_marginStart="16dp"
                             android:textStyle="bold"
                             android:textSize="14sp" />
                     </LinearLayout>
-                </androidx.cardview.widget.CardView>
+                </com.google.android.material.card.MaterialCardView>
 
                 <!-- Hidden RecyclerView required by Activity -->
                 <androidx.recyclerview.widget.RecyclerView
@@ -308,12 +333,15 @@
         </androidx.core.widget.NestedScrollView>
 
         <!-- Summary Area -->
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.Material3.CardView.Outlined"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="2dp"
-            android:layout_marginBottom="24dp">
+            app:cardCornerRadius="16dp"
+            app:strokeColor="#26888888"
+            app:cardBackgroundColor="?attr/colorSurface"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="8dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -324,21 +352,21 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp">
+                    android:layout_marginBottom="10dp">
                     
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Order:"
                         android:textColor="?android:attr/textColorSecondary"
-                        android:textSize="16sp" />
+                        android:textSize="14sp" />
                         
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="$ 95.00"
                         android:textColor="?android:attr/textColorPrimary"
-                        android:textSize="16sp"
+                        android:textSize="14sp"
                         android:layout_alignParentEnd="true" />
                 </RelativeLayout>
 
@@ -352,16 +380,22 @@
                         android:layout_height="wrap_content"
                         android:text="Delivery:"
                         android:textColor="?android:attr/textColorSecondary"
-                        android:textSize="16sp" />
+                        android:textSize="14sp" />
                         
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="$ 5.00"
                         android:textColor="?android:attr/textColorPrimary"
-                        android:textSize="16sp"
+                        android:textSize="14sp"
                         android:layout_alignParentEnd="true" />
                 </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#1A888888"
+                    android:layout_marginBottom="12dp" />
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -371,8 +405,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Total:"
-                        android:textColor="?android:attr/textColorSecondary"
-                        android:textSize="16sp" />
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
                         
                     <TextView
                         android:id="@+id/tv_checkout_total"
@@ -381,18 +416,19 @@
                         android:text="$ 100.00"
                         android:textColor="?android:attr/textColorPrimary"
                         android:textStyle="bold"
-                        android:textSize="16sp"
+                        android:textSize="18sp"
                         android:layout_alignParentEnd="true" />
                 </RelativeLayout>
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
+        <!-- Submit Order Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_place_order"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            app:backgroundTint="#242424"
-            app:cornerRadius="4dp"
+            app:backgroundTint="#1A1A1A"
+            app:cornerRadius="28dp"
             app:elevation="0dp"
             style="@style/Widget.MaterialComponents.Button"
             android:text="SUBMIT ORDER"
@@ -416,7 +452,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="SUCCESS!"
-            android:fontFamily="serif"
             android:textSize="32sp"
             android:textStyle="bold"
             android:textColor="?android:attr/textColorPrimary"
@@ -438,17 +473,18 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginBottom="32dp">
 
-            <ImageView
+            <com.airbnb.lottie.LottieAnimationView
                 android:id="@+id/img_success_illustration"
                 android:layout_width="240dp"
                 android:layout_height="240dp"
-                android:src="@drawable/ic_check_circle"
-                android:background="?attr/colorSurfaceVariant"
+                app:lottie_rawRes="@raw/success_anim"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="false"
+                android:background="@android:color/transparent"
                 android:padding="24dp"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
-
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -474,8 +510,8 @@
             android:layout_height="56dp"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            app:backgroundTint="#242424"
-            app:cornerRadius="4dp"
+            app:backgroundTint="#1A1A1A"
+            app:cornerRadius="28dp"
             app:elevation="0dp"
             style="@style/Widget.MaterialComponents.Button"
             android:text="Track your orders"
@@ -494,10 +530,10 @@
             android:layout_height="56dp"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            app:backgroundTint="@android:color/white"
+            app:backgroundTint="@android:color/transparent"
             app:strokeColor="?android:attr/textColorPrimary"
             app:strokeWidth="1dp"
-            app:cornerRadius="8dp"
+            app:cornerRadius="28dp"
             app:elevation="0dp"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:text="BACK TO HOME"

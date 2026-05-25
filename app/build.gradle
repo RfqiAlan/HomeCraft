@@ -63,6 +63,12 @@ dependencies {
     // Fused Location Provider
     implementation 'com.google.android.gms:play-services-location:21.3.0'
 
+    // Lottie Animation
+    implementation libs.lottie
+
+    // Biometric Authentication
+    implementation libs.biometric
+
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core

@@ -35,7 +35,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:fontFamily="serif"
             android:gravity="center"
             android:text="Rating &amp; Review"
             android:textColor="?android:attr/textColorPrimary"
@@ -152,7 +151,7 @@
                     <View
                         android:layout_width="1dp"
                         android:layout_height="80dp"
-                        android:background="#EEEEEE" />
+                        android:background="@color/divider_color" />
 
                     <!-- Info singkat di kanan -->
                     <LinearLayout

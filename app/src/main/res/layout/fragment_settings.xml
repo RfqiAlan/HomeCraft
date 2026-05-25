@@ -16,7 +16,6 @@
         android:textColor="?android:attr/textColorPrimary"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:fontFamily="serif"
         android:layout_marginTop="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -51,7 +50,7 @@
                     android:src="@drawable/ic_person"
                     android:scaleType="centerInside"
                     android:padding="24dp"
-                    android:background="#E0E0E0" />
+                    android:background="@color/divider_color" />
             </androidx.cardview.widget.CardView>
 
             <!-- AUTHENTICATED STATE -->
@@ -132,7 +131,7 @@
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
-                            android:background="#EEEEEE"
+                            android:background="@color/divider_color"
                             android:layout_marginVertical="8dp"/>
 
                         <!-- Language Toggle Row -->
@@ -232,7 +231,7 @@
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="32dp"
                     android:layout_marginEnd="24dp"
-                    app:backgroundTint="#FFF1F1"
+                    app:backgroundTint="@color/logout_bg_tint"
                     app:cornerRadius="12dp"
                     app:elevation="0dp"
                     style="@style/Widget.MaterialComponents.Button"

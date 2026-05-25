@@ -33,6 +33,7 @@ import com.example.furniture.database.ProductDao;
 import com.example.furniture.model.Product;
 import com.example.furniture.model.ProductResponse;
 import com.example.furniture.utils.Constants;
+import com.example.furniture.utils.LanguageManager;
 import com.example.furniture.utils.NetworkUtils;
 import com.example.furniture.utils.SweetDialog;
 
@@ -106,11 +107,32 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
         recyclerView  = view.findViewById(R.id.rv_products);
         etSearch      = view.findViewById(R.id.et_search);
         imgFilterCategory = view.findViewById(R.id.img_filter_category);
+        ImageView btnLanguage = view.findViewById(R.id.btn_language);
         progressBar   = view.findViewById(R.id.progress_bar);
         tvError       = view.findViewById(R.id.tv_error);
         btnRefresh    = view.findViewById(R.id.btn_refresh);
         swipeRefresh  = view.findViewById(R.id.swipe_refresh);
         layoutEmptySearch = view.findViewById(R.id.layout_empty_search);
+
+        // Setup Language Selector
+        if (btnLanguage != null) {
+            btnLanguage.setOnClickListener(v -> {
+                android.widget.PopupMenu popup = new android.widget.PopupMenu(requireContext(), v);
+                popup.getMenu().add(0, 1, 0, "English");
+                popup.getMenu().add(0, 2, 1, "Bahasa Indonesia");
+                popup.setOnMenuItemClickListener(item -> {
+                    String currentLang = LanguageManager.getLanguage(requireContext());
+                    String targetLang = (item.getItemId() == 1) ? Constants.LANG_EN : Constants.LANG_ID;
+                    
+                    if (!currentLang.equals(targetLang)) {
+                        LanguageManager.saveLanguage(requireContext(), targetLang);
+                        requireActivity().recreate();
+                    }
+                    return true;
+                });
+                popup.show();
+            });
+        }
 
         // Setup Search and Filter
         if (etSearch != null) {

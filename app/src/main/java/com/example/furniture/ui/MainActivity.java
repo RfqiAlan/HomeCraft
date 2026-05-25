@@ -37,6 +37,41 @@ public class MainActivity extends AppCompatActivity {
         ExchangeRateManager.fetchRate(this, null);
 
         setupNavigation();
+        handleDeepLink(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(android.content.Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handleDeepLink(intent);
+    }
+
+    /**
+     * Parsing URL deep link dan pindah ke halaman yang sesuai.
+     */
+    private void handleDeepLink(android.content.Intent intent) {
+        if (intent != null && android.content.Intent.ACTION_VIEW.equals(intent.getAction())) {
+            android.net.Uri data = intent.getData();
+            if (data != null && "homecraft.com".equals(data.getHost())) {
+                String path = data.getPath();
+                if (path != null) {
+                    if (path.startsWith("/product/")) {
+                        // Extract product ID: /product/123 -> 123
+                        String productId = path.substring("/product/".length());
+                        if (!productId.isEmpty()) {
+                            android.content.Intent detailIntent = new android.content.Intent(this, DetailActivity.class);
+                            detailIntent.putExtra(com.example.furniture.utils.Constants.EXTRA_PRODUCT_ID, productId);
+                            startActivity(detailIntent);
+                        }
+                    } else if (path.equals("/cart")) {
+                        if (navController != null) {
+                            navController.navigate(R.id.nav_cart);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**

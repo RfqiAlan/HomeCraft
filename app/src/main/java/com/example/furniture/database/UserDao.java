@@ -92,6 +92,30 @@ public class UserDao {
         return user;
     }
 
+    /**
+     * Mengambil data user berdasarkan email (dipakai untuk biometric login).
+     * Tidak memerlukan password karena otentikasi sudah dilakukan hardware sidik jari.
+     *
+     * @return User jika email ditemukan, null jika tidak ada
+     */
+    public User getUserByEmail(String email) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.query(TABLE,
+                null,
+                "email = ?",
+                new String[]{email},
+                null, null, null, "1");
+
+        User user = null;
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                user = cursorToUser(cursor);
+            }
+            cursor.close();
+        }
+        return user;
+    }
+
     // ─── Update Profil ───────────────────────────────────────────────────────────
 
     /**

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Night theme specific values -->
+    <color name="search_bg">#2D2D2D</color>
+    <color name="category_selected_bg">#FFFFFF</color>
+    <color name="category_unselected_bg">#2D2D2D</color>
+    <color name="divider_color">#2D2D2D</color>
+    <color name="bottom_sheet_bg">#1E1E1E</color>
+    <color name="radio_button_tint">#FFFFFF</color>
+    <color name="logout_bg_tint">#1AE53935</color> <!-- 10% opacity Red -->
+    <color name="badge_recommend_bg">#1F27AE60</color> <!-- 12% opacity Green -->
+    <color name="window_background">#121212</color>
+    <color name="category_selected_icon">#121212</color>
+</resources>

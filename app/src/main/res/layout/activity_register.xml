@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FAFAFA"
+    android:background="@color/window_background"
     android:fillViewport="true">
 
     <LinearLayout
@@ -26,7 +26,7 @@
                 android:layout_width="0dp"
                 android:layout_height="1dp"
                 android:layout_weight="1"
-                android:background="#D0D0D0" />
+                android:background="@color/divider_color" />
 
             <ImageView
                 android:layout_width="72dp"
@@ -42,7 +42,7 @@
                 android:layout_width="0dp"
                 android:layout_height="1dp"
                 android:layout_weight="1"
-                android:background="#D0D0D0" />
+                android:background="@color/divider_color" />
         </LinearLayout>
 
         <!-- ── Title ── -->
@@ -53,7 +53,6 @@
             android:textSize="28sp"
             android:textStyle="bold"
             android:textColor="?android:attr/textColorPrimary"
-            android:fontFamily="sans-serif-condensed"
             android:layout_marginBottom="28dp" />
 
         <!-- ── Form Card ── -->
@@ -94,7 +93,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#E0E0E0"
+                    android:background="@color/divider_color"
                     android:layout_marginBottom="20dp" />
 
                 <!-- Email Field -->
@@ -119,7 +118,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#E0E0E0"
+                    android:background="@color/divider_color"
                     android:layout_marginBottom="20dp" />
 
                 <!-- Password Field -->
@@ -160,7 +159,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#E0E0E0"
+                    android:background="@color/divider_color"
                     android:layout_marginBottom="20dp" />
 
                 <!-- Confirm Password Field -->
@@ -201,7 +200,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#E0E0E0"
+                    android:background="@color/divider_color"
                     android:layout_marginBottom="20dp" />
 
                 <!-- Address Field (Opsional) -->
@@ -227,8 +226,8 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#E0E0E0"
-                    android:layout_marginBottom="28dp" />
+                    android:background="@color/divider_color"
+                    android:layout_marginBottom="24dp" />
 
                 <!-- Progress Bar -->
                 <ProgressBar
@@ -267,7 +266,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Already have account? "
-                        android:textColor="#666666"
+                        android:textColor="?android:attr/textColorSecondary"
                         android:textSize="13sp" />
 
                     <TextView
