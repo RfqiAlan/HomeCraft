@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">HomeCraft</string>
+
+    <!-- Bottom Navigation -->
+    <string name="nav_home">Beranda</string>
+    <string name="nav_cart">Keranjang</string>
+    <string name="nav_favorite">Favorit</string>
+    <string name="nav_profile">Profil</string>
+
+    <!-- Home -->
+    <string name="search_hint">Cari furnitur…</string>
+    <string name="offline_data">Menampilkan data offline</string>
+    <string name="no_internet_cache_empty">Tidak ada koneksi internet dan data cache kosong.\nCoba refresh saat online.</string>
+    <string name="load_failed_retry">Gagal memuat produk. Coba lagi.</string>
+    <string name="connection_failed">Gagal terhubung ke server.</string>
+    <string name="no_results">Produk tidak ditemukan</string>
+    <string name="btn_refresh">Refresh</string>
+
+    <!-- Detail -->
+    <string name="add_to_cart">Tambah ke Keranjang</string>
+    <string name="reviews_label">ulasan</string>
+    <string name="see_reviews">Lihat Ulasan</string>
+    <string name="product_not_found">Produk tidak ditemukan. Coba saat online.</string>
+
+    <!-- Cart -->
+    <string name="cart_empty">Keranjang belanja kosong.\nTambahkan produk dari halaman detail.</string>
+    <string name="btn_checkout">Checkout</string>
+    <string name="cart_empty_warning">Keranjang masih kosong.</string>
+
+    <!-- Checkout -->
+    <string name="checkout_title">Checkout</string>
+    <string name="shipping_address">Alamat Pengiriman</string>
+    <string name="payment">Pembayaran</string>
+    <string name="phone_number">Nomor Telepon</string>
+    <string name="delivery_method">Metode Pengiriman</string>
+    <string name="btn_submit_order">BUAT PESANAN</string>
+    <string name="total_payment">Total Pembayaran: </string>
+    <string name="address_required">Alamat pengiriman wajib diisi</string>
+    <string name="phone_required">Nomor HP wajib diisi</string>
+    <string name="select_payment">Pilih metode pembayaran terlebih dahulu.</string>
+    <string name="order_success">✅ Pesanan berhasil dibuat!</string>
+    <string name="order_failed">Gagal membuat order. Coba lagi.</string>
+    <string name="login_required">Login diperlukan untuk checkout.</string>
+    <string name="cart_is_empty">Keranjang kosong.</string>
+    <string name="btn_track_orders">Lacak pesanan Anda</string>
+    <string name="btn_back_to_home">KEMBALI KE BERANDA</string>
+    <string name="success_title">BERHASIL!</string>
+    <string name="success_desc">Pesanan Anda akan segera dikirim.\nTerima kasih telah menggunakan aplikasi kami!</string>
+
+    <!-- Location -->
+    <string name="location_detecting">📍 Mendapatkan lokasi…</string>
+    <string name="location_success">✅ Alamat berhasil diisi dari lokasi GPS</string>
+    <string name="location_not_found">⚠️ Lokasi tidak dapat ditemukan. Pastikan GPS aktif.</string>
+    <string name="location_failed">⚠️ Gagal mendapatkan lokasi: </string>
+    <string name="geocode_failed">⚠️ Geocoding gagal. Periksa koneksi internet.</string>
+    <string name="geocode_no_address">⚠️ Alamat tidak ditemukan untuk lokasi ini.</string>
+    <string name="location_permission_required">⚠️ Izin lokasi diperlukan untuk fitur ini.</string>
+    <string name="location_detected">✅ Lokasi berhasil dideteksi!</string>
+
+    <!-- Favorite -->
+    <string name="favorite_empty">Belum ada produk favorit.\nTambahkan produk dari halaman detail.</string>
+    <string name="favorite_added">Produk ditambahkan ke favorit ❤</string>
+    <string name="favorite_removed">Produk dihapus dari favorit</string>
+    <string name="label_favorites">Favorit</string>
+
+    <!-- Profile / Settings -->
+    <string name="profile_title">Profil</string>
+    <string name="account_settings">PENGATURAN AKUN</string>
+    <string name="dark_mode">Mode Gelap</string>
+    <string name="light_mode">Mode Terang</string>
+    <string name="shipping_address_label">Alamat Pengiriman</string>
+    <string name="address_not_set">Belum diatur</string>
+    <string name="address_updated">Alamat diperbarui</string>
+    <string name="btn_logout">KELUAR</string>
+    <string name="logout_success">Berhasil logout.</string>
+    <string name="welcome_title">Selamat Datang di HomeCraft</string>
+    <string name="welcome_desc">Masuk untuk melihat profil, melacak pesanan, dan menyimpan favorit Anda.</string>
+    <string name="btn_login">MASUK</string>
+    <string name="language_label">Bahasa</string>
+    <string name="language_english">English</string>
+    <string name="language_indonesian">Indonesia</string>
+
+    <!-- Edit Address Dialog -->
+    <string name="edit_address_title">Edit Alamat Pengiriman</string>
+    <string name="btn_use_location">📍  Gunakan Lokasi Saat Ini</string>
+    <string name="hint_street">Alamat Jalan (No. Rumah, Jalan)</string>
+    <string name="hint_city">Kecamatan / Kota</string>
+    <string name="hint_province">Provinsi / Negara Bagian</string>
+    <string name="hint_postal">Kode Pos</string>
+    <string name="hint_country">Negara</string>
+    <string name="btn_cancel">Batal</string>
+    <string name="btn_save">Simpan</string>
+
+    <!-- NFC -->
+    <string name="nfc_not_available_title">NFC Tidak Tersedia</string>
+    <string name="nfc_not_available_msg">Perangkat ini tidak mendukung NFC. Silakan pilih metode pembayaran lain.</string>
+    <string name="nfc_disabled_title">NFC Tidak Aktif</string>
+    <string name="nfc_disabled_msg">Aktifkan NFC di pengaturan perangkat untuk menggunakan metode pembayaran ini.</string>
+    <string name="nfc_open_settings">Buka Pengaturan</string>
+    <string name="nfc_active">✅ NFC aktif! Tap kartu saat menekan Bayar.</string>
+    <string name="nfc_waiting_title">💳 Pembayaran NFC</string>
+    <string name="nfc_waiting_msg">Tempelkan kartu atau perangkat NFC Anda ke belakang ponsel…</string>
+    <string name="nfc_card_detected">✅ Kartu terdeteksi! Memproses pembayaran…</string>
+    <string name="btn_cancel_payment">Batal</string>
+
+    <!-- General -->
+    <string name="btn_ok">OK</string>
+    <string name="hello_user">Halo, </string>
+</resources>

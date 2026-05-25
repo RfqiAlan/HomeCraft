@@ -1,3 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Furniture</string>
+    <string name="app_name">HomeCraft</string>
+
+    <!-- Bottom Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_cart">Cart</string>
+    <string name="nav_favorite">Favorite</string>
+    <string name="nav_profile">Profile</string>
+
+    <!-- Home -->
+    <string name="search_hint">Search furniture…</string>
+    <string name="offline_data">Showing offline data</string>
+    <string name="no_internet_cache_empty">No internet connection and cache is empty.\nTry refreshing when online.</string>
+    <string name="load_failed_retry">Failed to load products. Try again.</string>
+    <string name="connection_failed">Failed to connect to server.</string>
+    <string name="no_results">No products found</string>
+    <string name="btn_refresh">Refresh</string>
+
+    <!-- Detail -->
+    <string name="add_to_cart">Add to Cart</string>
+    <string name="reviews_label">reviews</string>
+    <string name="see_reviews">See Reviews</string>
+    <string name="product_not_found">Product not found. Try when online.</string>
+
+    <!-- Cart -->
+    <string name="cart_empty">Your cart is empty.\nAdd products from the detail page.</string>
+    <string name="btn_checkout">Checkout</string>
+    <string name="cart_empty_warning">Your cart is empty.</string>
+
+    <!-- Checkout -->
+    <string name="checkout_title">Checkout</string>
+    <string name="shipping_address">Shipping Address</string>
+    <string name="payment">Payment</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="delivery_method">Delivery method</string>
+    <string name="btn_submit_order">SUBMIT ORDER</string>
+    <string name="total_payment">Total Payment: </string>
+    <string name="address_required">Shipping address is required</string>
+    <string name="phone_required">Phone number is required</string>
+    <string name="select_payment">Please select a payment method first.</string>
+    <string name="order_success">✅ Order placed successfully!</string>
+    <string name="order_failed">Failed to place order. Try again.</string>
+    <string name="login_required">Login required for checkout.</string>
+    <string name="cart_is_empty">Cart is empty.</string>
+    <string name="btn_track_orders">Track your orders</string>
+    <string name="btn_back_to_home">BACK TO HOME</string>
+    <string name="success_title">SUCCESS!</string>
+    <string name="success_desc">Your order will be delivered soon.\nThank you for choosing our app!</string>
+
+    <!-- Location -->
+    <string name="location_detecting">📍 Getting location…</string>
+    <string name="location_success">✅ Address filled from GPS location</string>
+    <string name="location_not_found">⚠️ Location not found. Make sure GPS is active.</string>
+    <string name="location_failed">⚠️ Failed to get location: </string>
+    <string name="geocode_failed">⚠️ Geocoding failed. Check your internet connection.</string>
+    <string name="geocode_no_address">⚠️ No address found for this location.</string>
+    <string name="location_permission_required">⚠️ Location permission is required for this feature.</string>
+    <string name="location_detected">✅ Location detected!</string>
+
+    <!-- Favorite -->
+    <string name="favorite_empty">No favorite products yet.\nAdd products from the detail page.</string>
+    <string name="favorite_added">Product added to favorites ❤</string>
+    <string name="favorite_removed">Product removed from favorites</string>
+    <string name="label_favorites">Favorites</string>
+
+    <!-- Profile / Settings -->
+    <string name="profile_title">Profile</string>
+    <string name="account_settings">ACCOUNT SETTINGS</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="light_mode">Light Mode</string>
+    <string name="shipping_address_label">Shipping Address</string>
+    <string name="address_not_set">Not set</string>
+    <string name="address_updated">Address updated</string>
+    <string name="btn_logout">LOGOUT</string>
+    <string name="logout_success">Logged out successfully.</string>
+    <string name="welcome_title">Welcome to HomeCraft</string>
+    <string name="welcome_desc">Log in to view your profile, track your orders, and save your favorites.</string>
+    <string name="btn_login">LOG IN</string>
+    <string name="language_label">Language</string>
+    <string name="language_english">English</string>
+    <string name="language_indonesian">Indonesia</string>
+
+    <!-- Edit Address Dialog -->
+    <string name="edit_address_title">Edit Shipping Address</string>
+    <string name="btn_use_location">📍  Use Current Location</string>
+    <string name="hint_street">Street Address</string>
+    <string name="hint_city">District / City</string>
+    <string name="hint_province">Province / State</string>
+    <string name="hint_postal">Postal Code</string>
+    <string name="hint_country">Country</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_save">Save</string>
+
+    <!-- NFC -->
+    <string name="nfc_not_available_title">NFC Not Available</string>
+    <string name="nfc_not_available_msg">This device does not support NFC. Please choose another payment method.</string>
+    <string name="nfc_disabled_title">NFC Disabled</string>
+    <string name="nfc_disabled_msg">Enable NFC in device settings to use this payment method.</string>
+    <string name="nfc_open_settings">Open Settings</string>
+    <string name="nfc_active">✅ NFC active! Tap your card when pressing Pay.</string>
+    <string name="nfc_waiting_title">💳 NFC Payment</string>
+    <string name="nfc_waiting_msg">Tap your card or NFC device to the back of your phone…</string>
+    <string name="nfc_card_detected">✅ Card detected! Processing payment…</string>
+    <string name="btn_cancel_payment">Cancel</string>
+
+    <!-- General -->
+    <string name="btn_ok">OK</string>
+    <string name="hello_user">Hello, </string>
 </resources>

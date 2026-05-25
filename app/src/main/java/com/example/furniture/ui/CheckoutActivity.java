@@ -37,6 +37,7 @@ import com.example.furniture.model.CartItem;
 import com.example.furniture.model.Order;
 import com.example.furniture.model.User;
 import com.example.furniture.utils.Constants;
+import com.example.furniture.utils.LanguageManager;
 import com.example.furniture.utils.SessionManager;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -487,9 +488,10 @@ public class CheckoutActivity extends AppCompatActivity {
     }
 
     private void displayCheckoutSummary() {
-        NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("en", "US"));
         if (tvCheckoutTotal != null) {
-            tvCheckoutTotal.setText("Total Pembayaran: " + nf.format(totalPrice));
+            tvCheckoutTotal.setText(
+                    getString(R.string.total_payment) +
+                    LanguageManager.formatPrice(this, totalPrice));
         }
     }
 

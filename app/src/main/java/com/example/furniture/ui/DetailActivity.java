@@ -26,6 +26,7 @@ import com.example.furniture.database.ProductDao;
 import com.example.furniture.model.Product;
 import com.example.furniture.model.ProductDetailResponse;
 import com.example.furniture.utils.Constants;
+import com.example.furniture.utils.LanguageManager;
 import com.example.furniture.utils.NetworkUtils;
 
 import java.text.NumberFormat;
@@ -396,7 +397,6 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private String formatPrice(double price) {
-        NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("en", "US"));
-        return nf.format(price);
+        return LanguageManager.formatPrice(this, price);
     }
 }

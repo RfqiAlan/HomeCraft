@@ -22,6 +22,9 @@ import androidx.fragment.app.Fragment;
 
 import com.example.furniture.BuildConfig;
 import com.example.furniture.R;
+import com.example.furniture.utils.Constants;
+import com.example.furniture.utils.ExchangeRateManager;
+import com.example.furniture.utils.LanguageManager;
 import com.example.furniture.utils.SessionManager;
 import com.example.furniture.utils.ThemeManager;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -53,6 +56,8 @@ public class SettingsFragment extends Fragment {
     private TextView tvUserEmail;
     private Button btnLogout;
     private Button btnLogin;
+    private com.google.android.material.button.MaterialButton btnLangEn;
+    private com.google.android.material.button.MaterialButton btnLangId;
 
     private View layoutShippingAddress;
     private TextView tvCurrentAddress;
@@ -139,6 +144,17 @@ public class SettingsFragment extends Fragment {
         // Tombol logout
         if (btnLogout != null) {
             btnLogout.setOnClickListener(v -> logout());
+        }
+
+        // Tombol toggle bahasa
+        btnLangEn = view.findViewById(R.id.btn_lang_en);
+        btnLangId = view.findViewById(R.id.btn_lang_id);
+        updateLanguageButtonState();
+        if (btnLangEn != null) {
+            btnLangEn.setOnClickListener(v -> switchLanguage(Constants.LANG_EN));
+        }
+        if (btnLangId != null) {
+            btnLangId.setOnClickListener(v -> switchLanguage(Constants.LANG_ID));
         }
 
         // Tombol login
@@ -437,6 +453,68 @@ public class SettingsFragment extends Fragment {
                         "⚠️ Izin lokasi diperlukan untuk fitur ini.",
                         Toast.LENGTH_LONG).show();
             }
+        }
+    }
+
+    // ─── Language ─────────────────────────────────────────────────────────────────
+
+    /**
+     * Simpan bahasa baru, fetch kurs terbaru jika ganti ke ID, lalu recreate activity.
+     */
+    private void switchLanguage(String langCode) {
+        String current = LanguageManager.getLanguage(requireContext());
+        if (current.equals(langCode)) return; // Tidak perlu recreate jika sama
+
+        LanguageManager.saveLanguage(requireContext(), langCode);
+
+        // Fetch kurs terbaru saat ganti ke Indonesia
+        if (Constants.LANG_ID.equals(langCode)) {
+            ExchangeRateManager.fetchRate(requireContext(), new ExchangeRateManager.OnRateFetchedListener() {
+                @Override
+                public void onSuccess(double idrRate) {
+                    if (getActivity() != null) getActivity().recreate();
+                }
+                @Override
+                public void onFailure(double fallbackRate) {
+                    if (getActivity() != null) getActivity().recreate();
+                }
+            });
+        } else {
+            if (getActivity() != null) getActivity().recreate();
+        }
+    }
+
+    /**
+     * Perbarui tampilan tombol bahasa: yang aktif tampil filled (solid), yang tidak tampil outlined.
+     */
+    private void updateLanguageButtonState() {
+        if (btnLangEn == null || btnLangId == null || getContext() == null) return;
+        boolean isId = LanguageManager.isIndonesian(requireContext());
+
+        // Tombol EN
+        if (isId) {
+            btnLangEn.setBackgroundTintList(null);
+            btnLangEn.setTextColor(getResources().getColor(
+                    android.R.color.darker_gray, requireContext().getTheme()));
+        } else {
+            btnLangEn.setBackgroundTintList(
+                    android.content.res.ColorStateList.valueOf(
+                            androidx.core.content.ContextCompat.getColor(
+                                    requireContext(), android.R.color.black)));
+            btnLangEn.setTextColor(android.graphics.Color.WHITE);
+        }
+
+        // Tombol ID
+        if (isId) {
+            btnLangId.setBackgroundTintList(
+                    android.content.res.ColorStateList.valueOf(
+                            androidx.core.content.ContextCompat.getColor(
+                                    requireContext(), android.R.color.black)));
+            btnLangId.setTextColor(android.graphics.Color.WHITE);
+        } else {
+            btnLangId.setBackgroundTintList(null);
+            btnLangId.setTextColor(getResources().getColor(
+                    android.R.color.darker_gray, requireContext().getTheme()));
         }
     }
 

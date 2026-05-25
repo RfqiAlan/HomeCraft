@@ -1,5 +1,6 @@
 package com.example.furniture.ui;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,6 +9,8 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.furniture.R;
+import com.example.furniture.utils.ExchangeRateManager;
+import com.example.furniture.utils.LanguageManager;
 import com.example.furniture.utils.ThemeManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -20,12 +23,18 @@ public class MainActivity extends AppCompatActivity {
     private NavController navController;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        // Terapkan tema sebelum setContentView
-        ThemeManager.applyTheme(this);
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LanguageManager.applyLanguage(newBase));
+    }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        ThemeManager.applyTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Fetch kurs terbaru di background (update cache jika online)
+        ExchangeRateManager.fetchRate(this, null);
 
         setupNavigation();
     }

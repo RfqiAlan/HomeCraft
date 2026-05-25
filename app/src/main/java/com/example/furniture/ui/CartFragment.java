@@ -20,6 +20,7 @@ import com.example.furniture.adapter.CartAdapter;
 import com.example.furniture.database.CartDao;
 import com.example.furniture.database.DatabaseHelper;
 import com.example.furniture.model.CartItem;
+import com.example.furniture.utils.LanguageManager;
 
 import java.text.NumberFormat;
 import java.util.List;
@@ -116,8 +117,7 @@ public class CartFragment extends Fragment implements CartAdapter.OnCartActionLi
 
     private void calculateTotal(double total) {
         if (tvTotal != null) {
-            NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("en", "US"));
-            tvTotal.setText(nf.format(total));
+            tvTotal.setText(LanguageManager.formatPrice(requireContext(), total));
         }
     }
 

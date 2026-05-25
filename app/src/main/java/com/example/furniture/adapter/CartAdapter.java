@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.furniture.R;
 import com.example.furniture.model.CartItem;
+import com.example.furniture.utils.LanguageManager;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -157,8 +158,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         }
 
         private String formatPrice(double price) {
-            NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("en", "US"));
-            return nf.format(price);
+            return LanguageManager.formatPrice(context, price);
         }
     }
 }

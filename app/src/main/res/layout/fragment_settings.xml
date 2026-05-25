@@ -135,6 +135,53 @@
                             android:background="#EEEEEE"
                             android:layout_marginVertical="8dp"/>
 
+                        <!-- Language Toggle Row -->
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingVertical="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/language_label"
+                                android:textColor="?android:attr/textColorPrimary"
+                                android:textSize="16sp"
+                                android:layout_centerVertical="true"/>
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true">
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_lang_en"
+                                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="36dp"
+                                    android:text="🇺🇸 EN"
+                                    android:textSize="12sp"
+                                    app:cornerRadius="18dp"
+                                    android:layout_marginEnd="6dp"
+                                    app:strokeWidth="1dp" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_lang_id"
+                                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="36dp"
+                                    android:text="🇮🇩 ID"
+                                    android:textSize="12sp"
+                                    app:cornerRadius="18dp"
+                                    app:strokeWidth="1dp" />
+
+                            </LinearLayout>
+                        </RelativeLayout>
+
+
+
                         <RelativeLayout
                             android:id="@+id/layout_shipping_address"
                             android:layout_width="match_parent"

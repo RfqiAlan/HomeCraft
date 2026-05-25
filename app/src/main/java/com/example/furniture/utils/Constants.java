@@ -35,6 +35,17 @@ public class Constants {
     public static final String THEME_DARK      = "dark";
     public static final String THEME_LIGHT     = "light";
 
+    // ─── Language & Currency ─────────────────────────────────────────────────────
+    public static final String PREF_LANGUAGE        = "app_language";
+    public static final String LANG_EN              = "en";
+    public static final String LANG_ID              = "id";
+    public static final String PREF_IDR_RATE        = "usd_to_idr_rate";
+    /** Fallback kurs jika API exchange rate tidak tersedia */
+    public static final double USD_TO_IDR_FALLBACK  = 16000.0;
+    /** Endpoint live exchange rate */
+    public static final String EXCHANGE_RATE_URL    =
+            "https://api.exchangerate-api.com/v4/latest/USD";
+
     // ID kategori "Home" hasil pencarian pada endpoint categories/list Kohls.
     public static final String FURNITURE_CATEGORY_ID   = "1778712552738";
     public static final String FURNITURE_CATEGORY_NAME = "Home";
