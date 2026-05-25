@@ -1,8 +1,12 @@
 package com.example.furniture.ui;
 
+import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcManager;
 import android.os.Bundle;
@@ -10,6 +14,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -19,6 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -32,7 +38,11 @@ import com.example.furniture.model.Order;
 import com.example.furniture.model.User;
 import com.example.furniture.utils.Constants;
 import com.example.furniture.utils.SessionManager;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
 
+import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
@@ -52,7 +62,8 @@ import java.util.concurrent.Executors;
  */
 public class CheckoutActivity extends AppCompatActivity {
 
-    private static final int REQUEST_LOGIN = 200;
+    private static final int REQUEST_LOGIN          = 200;
+    private static final int REQUEST_LOCATION_PERM  = 201;
 
     // ─── Views ───────────────────────────────────────────────────────────────────
 
@@ -65,6 +76,7 @@ public class CheckoutActivity extends AppCompatActivity {
     private Button btnPlaceOrder;
     private View layoutSuccess;
     private View layoutCheckout;
+    private ImageButton btnUseLocationCheckout;
 
     // ─── Data ─────────────────────────────────────────────────────────────────────
 
@@ -82,6 +94,9 @@ public class CheckoutActivity extends AppCompatActivity {
     private PendingIntent nfcPendingIntent;
     private AlertDialog nfcWaitingDialog;
 
+    // ─── Location ────────────────────────────────────────────────────────────────
+    private FusedLocationProviderClient fusedLocationClient;
+
     // ─── Lifecycle ───────────────────────────────────────────────────────────────
 
     @Override
@@ -96,6 +111,7 @@ public class CheckoutActivity extends AppCompatActivity {
 
         initView();
         initNfc();
+        initLocation();
 
         // ─── Cek login sebelum lanjut ──────────────────────────────────────────
         if (!sessionManager.isLoggedIn()) {
@@ -153,15 +169,16 @@ public class CheckoutActivity extends AppCompatActivity {
     // ─── Init ────────────────────────────────────────────────────────────────────
 
     private void initView() {
-        rvCheckoutItems  = findViewById(R.id.rv_checkout_items);
-        tvCheckoutTotal  = findViewById(R.id.tv_checkout_total);
-        tvUserName       = findViewById(R.id.tv_checkout_user_name);
-        etShippingAddress = findViewById(R.id.et_shipping_address);
-        etPhoneNumber    = findViewById(R.id.et_phone_number);
-        rgPaymentMethod  = findViewById(R.id.rg_payment_method);
-        btnPlaceOrder    = findViewById(R.id.btn_place_order);
-        layoutSuccess    = findViewById(R.id.layout_order_success);
-        layoutCheckout   = findViewById(R.id.layout_checkout_content);
+        rvCheckoutItems       = findViewById(R.id.rv_checkout_items);
+        tvCheckoutTotal       = findViewById(R.id.tv_checkout_total);
+        tvUserName            = findViewById(R.id.tv_checkout_user_name);
+        etShippingAddress     = findViewById(R.id.et_shipping_address);
+        etPhoneNumber         = findViewById(R.id.et_phone_number);
+        rgPaymentMethod       = findViewById(R.id.rg_payment_method);
+        btnPlaceOrder         = findViewById(R.id.btn_place_order);
+        layoutSuccess         = findViewById(R.id.layout_order_success);
+        layoutCheckout        = findViewById(R.id.layout_checkout_content);
+        btnUseLocationCheckout = findViewById(R.id.btn_use_location_checkout);
 
         DatabaseHelper dbHelper = DatabaseHelper.getInstance(this);
         cartDao        = new CartDao(dbHelper);
@@ -177,7 +194,19 @@ public class CheckoutActivity extends AppCompatActivity {
             btnPlaceOrder.setOnClickListener(v -> placeOrder());
         }
 
+        // Tombol GPS untuk isi alamat otomatis
+        if (btnUseLocationCheckout != null) {
+            btnUseLocationCheckout.setOnClickListener(v -> requestLocationAndFill());
+        }
+
         setupPaymentMethods();
+    }
+
+    /**
+     * Inisialisasi FusedLocationProviderClient.
+     */
+    private void initLocation() {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
     /**
@@ -200,6 +229,132 @@ public class CheckoutActivity extends AppCompatActivity {
                 showNfcGuide();
             }
         });
+    }
+
+    // ─── Fused Location ──────────────────────────────────────────────────────────
+
+    /**
+     * Minta permission lokasi lalu ambil lokasi jika sudah diberikan.
+     */
+    private void requestLocationAndFill() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            fetchCurrentLocation();
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                    },
+                    REQUEST_LOCATION_PERM);
+        }
+    }
+
+    /**
+     * Ambil lokasi terakhir yang diketahui, lalu reverse geocoding ke alamat.
+     */
+    private void fetchCurrentLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+        Toast.makeText(this, "📍 Mendapatkan lokasi...", Toast.LENGTH_SHORT).show();
+
+        fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+                .addOnSuccessListener(this, location -> {
+                    if (location != null) {
+                        reverseGeocodeAndFillCheckout(location.getLatitude(), location.getLongitude());
+                    } else {
+                        // Fallback ke getLastLocation jika getCurrentLocation kosong
+                        fusedLocationClient.getLastLocation()
+                                .addOnSuccessListener(this, lastLocation -> {
+                                    if (lastLocation != null) {
+                                        reverseGeocodeAndFillCheckout(
+                                                lastLocation.getLatitude(),
+                                                lastLocation.getLongitude());
+                                    } else {
+                                        Toast.makeText(this,
+                                                "⚠️ Lokasi tidak dapat ditemukan. Pastikan GPS aktif.",
+                                                Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                    }
+                })
+                .addOnFailureListener(this, e ->
+                        Toast.makeText(this,
+                                "⚠️ Gagal mendapatkan lokasi: " + e.getMessage(),
+                                Toast.LENGTH_LONG).show());
+    }
+
+    /**
+     * Reverse geocoding: koordinat → alamat teks → isi EditText.
+     */
+    private void reverseGeocodeAndFillCheckout(double lat, double lng) {
+        executor.execute(() -> {
+            try {
+                Geocoder geocoder = new Geocoder(this, new Locale("id", "ID"));
+                List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
+                if (addresses != null && !addresses.isEmpty()) {
+                    Address addr = addresses.get(0);
+                    StringBuilder sb = new StringBuilder();
+
+                    // Susun alamat: jalan, kecamatan, kota, provinsi, kode pos, negara
+                    if (!TextUtils.isEmpty(addr.getThoroughfare()))
+                        sb.append(addr.getThoroughfare());
+                    if (!TextUtils.isEmpty(addr.getSubLocality()))
+                        sb.append(sb.length() > 0 ? ", " : "").append(addr.getSubLocality());
+                    if (!TextUtils.isEmpty(addr.getLocality()))
+                        sb.append(sb.length() > 0 ? ", " : "").append(addr.getLocality());
+                    if (!TextUtils.isEmpty(addr.getAdminArea()))
+                        sb.append(sb.length() > 0 ? ", " : "").append(addr.getAdminArea());
+                    if (!TextUtils.isEmpty(addr.getPostalCode()))
+                        sb.append(sb.length() > 0 ? ", " : "").append(addr.getPostalCode());
+                    if (!TextUtils.isEmpty(addr.getCountryName()))
+                        sb.append(sb.length() > 0 ? ", " : "").append(addr.getCountryName());
+
+                    String fullAddress = sb.toString();
+                    runOnUiThread(() -> {
+                        if (etShippingAddress != null && !fullAddress.isEmpty()) {
+                            etShippingAddress.setText(fullAddress);
+                            etShippingAddress.setError(null);
+                            Toast.makeText(this, "✅ Alamat berhasil diisi dari lokasi GPS",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    runOnUiThread(() ->
+                            Toast.makeText(this,
+                                    "⚠️ Alamat tidak ditemukan untuk lokasi ini.",
+                                    Toast.LENGTH_LONG).show());
+                }
+            } catch (IOException e) {
+                runOnUiThread(() ->
+                        Toast.makeText(this,
+                                "⚠️ Geocoding gagal. Periksa koneksi internet.",
+                                Toast.LENGTH_LONG).show());
+            }
+        });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_LOCATION_PERM) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                fetchCurrentLocation();
+            } else {
+                Toast.makeText(this,
+                        "⚠️ Izin lokasi diperlukan untuk fitur ini.",
+                        Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     // ─── NFC ─────────────────────────────────────────────────────────────────────

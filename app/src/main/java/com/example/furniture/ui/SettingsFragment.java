@@ -1,6 +1,11 @@
 package com.example.furniture.ui;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,18 +17,30 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.furniture.BuildConfig;
 import com.example.furniture.R;
 import com.example.furniture.utils.SessionManager;
 import com.example.furniture.utils.ThemeManager;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * SettingsFragment — mengatur dark/light theme, menampilkan info user,
- * dan menyediakan tombol logout.
+ * menyediakan tombol logout, dan edit alamat pengiriman dengan Fused Location.
  */
 public class SettingsFragment extends Fragment {
+
+    private static final int REQUEST_LOCATION_PERM = 301;
 
     // ─── Views ───────────────────────────────────────────────────────────────────
 
@@ -36,7 +53,7 @@ public class SettingsFragment extends Fragment {
     private TextView tvUserEmail;
     private Button btnLogout;
     private Button btnLogin;
-    
+
     private View layoutShippingAddress;
     private TextView tvCurrentAddress;
 
@@ -45,6 +62,17 @@ public class SettingsFragment extends Fragment {
     private SessionManager sessionManager;
     private com.example.furniture.database.UserDao userDao;
     private java.util.concurrent.ExecutorService executorService;
+
+    // ─── Location ─────────────────────────────────────────────────────────────────
+
+    private FusedLocationProviderClient fusedLocationClient;
+
+    /** Referensi sementara ke dialog saat ini (untuk diisi dari callback GPS) */
+    private TextInputEditText dialogEtStreet;
+    private TextInputEditText dialogEtCity;
+    private TextInputEditText dialogEtProvince;
+    private TextInputEditText dialogEtPostalCode;
+    private TextInputEditText dialogEtCountry;
 
     // ─── Lifecycle ───────────────────────────────────────────────────────────────
 
@@ -60,10 +88,11 @@ public class SettingsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initView(view);
+        initLocation();
         loadSavedTheme();
         displayUserInfo();
     }
-    
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -119,11 +148,18 @@ public class SettingsFragment extends Fragment {
                 startActivity(intent);
             });
         }
-        
+
         // Edit Shipping Address
         if (layoutShippingAddress != null) {
             layoutShippingAddress.setOnClickListener(v -> showEditAddressDialog());
         }
+    }
+
+    /**
+     * Inisialisasi FusedLocationProviderClient.
+     */
+    private void initLocation() {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
     }
 
     @Override
@@ -146,7 +182,7 @@ public class SettingsFragment extends Fragment {
 
             if (tvUserName != null) tvUserName.setText(sessionManager.getUserName());
             if (tvUserEmail != null) tvUserEmail.setText(sessionManager.getUserEmail());
-            
+
             // Load address from DB
             loadAddressFromDb();
         } else {
@@ -154,7 +190,7 @@ public class SettingsFragment extends Fragment {
             if (layoutUnauthenticated != null) layoutUnauthenticated.setVisibility(View.VISIBLE);
         }
     }
-    
+
     private void loadAddressFromDb() {
         executorService.execute(() -> {
             com.example.furniture.model.User user = userDao.getUserById(sessionManager.getUserId());
@@ -168,34 +204,35 @@ public class SettingsFragment extends Fragment {
             }
         });
     }
-    
+
     private void showEditAddressDialog() {
         View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_edit_address, null);
-        
-        com.google.android.material.textfield.TextInputEditText etStreet = dialogView.findViewById(R.id.et_street);
-        com.google.android.material.textfield.TextInputEditText etCity = dialogView.findViewById(R.id.et_city);
-        com.google.android.material.textfield.TextInputEditText etProvince = dialogView.findViewById(R.id.et_province);
-        com.google.android.material.textfield.TextInputEditText etPostalCode = dialogView.findViewById(R.id.et_postal_code);
-        com.google.android.material.textfield.TextInputEditText etCountry = dialogView.findViewById(R.id.et_country);
-        
-        com.google.android.material.button.MaterialButton btnCancel = dialogView.findViewById(R.id.btn_cancel_address);
-        com.google.android.material.button.MaterialButton btnSave = dialogView.findViewById(R.id.btn_save_address);
 
-        // Parse existing address
+        dialogEtStreet     = dialogView.findViewById(R.id.et_street);
+        dialogEtCity       = dialogView.findViewById(R.id.et_city);
+        dialogEtProvince   = dialogView.findViewById(R.id.et_province);
+        dialogEtPostalCode = dialogView.findViewById(R.id.et_postal_code);
+        dialogEtCountry    = dialogView.findViewById(R.id.et_country);
+
+        MaterialButton btnDetectLocation = dialogView.findViewById(R.id.btn_detect_location);
+        MaterialButton btnCancel = dialogView.findViewById(R.id.btn_cancel_address);
+        MaterialButton btnSave   = dialogView.findViewById(R.id.btn_save_address);
+
+        // Parse existing address ke field-field
         if (tvCurrentAddress != null) {
             String current = tvCurrentAddress.getText().toString();
             if (!current.equals("Belum diatur") && !current.isEmpty()) {
                 String[] parts = current.split(", ");
-                if (parts.length >= 1) etStreet.setText(parts[0]);
-                if (parts.length >= 2) etCity.setText(parts[1]);
-                if (parts.length >= 3) etProvince.setText(parts[2]);
-                if (parts.length >= 4) etPostalCode.setText(parts[3]);
+                if (parts.length >= 1) dialogEtStreet.setText(parts[0]);
+                if (parts.length >= 2) dialogEtCity.setText(parts[1]);
+                if (parts.length >= 3) dialogEtProvince.setText(parts[2]);
+                if (parts.length >= 4) dialogEtPostalCode.setText(parts[3]);
                 if (parts.length >= 5) {
                     StringBuilder country = new StringBuilder();
-                    for(int i = 4; i < parts.length; i++) {
+                    for (int i = 4; i < parts.length; i++) {
                         country.append(parts[i]).append(i == parts.length - 1 ? "" : ", ");
                     }
-                    etCountry.setText(country.toString());
+                    dialogEtCountry.setText(country.toString());
                 }
             }
         }
@@ -203,34 +240,52 @@ public class SettingsFragment extends Fragment {
         androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(requireContext())
                 .setView(dialogView)
                 .create();
-                
-        // Style dialog to be transparent so our layout corners show (if any)
+
         if (dialog.getWindow() != null) {
             dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }
 
-        btnCancel.setOnClickListener(v -> dialog.dismiss());
+        // Tombol deteksi lokasi GPS
+        if (btnDetectLocation != null) {
+            btnDetectLocation.setOnClickListener(v -> requestLocationForDialog());
+        }
+
+        btnCancel.setOnClickListener(v -> {
+            clearDialogReferences();
+            dialog.dismiss();
+        });
+
         btnSave.setOnClickListener(v -> {
             StringBuilder sb = new StringBuilder();
-            String street = etStreet.getText().toString().trim();
-            String city = etCity.getText().toString().trim();
-            String province = etProvince.getText().toString().trim();
-            String postal = etPostalCode.getText().toString().trim();
-            String country = etCountry.getText().toString().trim();
-            
-            if (!street.isEmpty()) sb.append(street);
-            if (!city.isEmpty()) sb.append(sb.length() > 0 ? ", " : "").append(city);
+            String street   = dialogEtStreet.getText() != null ? dialogEtStreet.getText().toString().trim() : "";
+            String city     = dialogEtCity.getText() != null ? dialogEtCity.getText().toString().trim() : "";
+            String province = dialogEtProvince.getText() != null ? dialogEtProvince.getText().toString().trim() : "";
+            String postal   = dialogEtPostalCode.getText() != null ? dialogEtPostalCode.getText().toString().trim() : "";
+            String country  = dialogEtCountry.getText() != null ? dialogEtCountry.getText().toString().trim() : "";
+
+            if (!street.isEmpty())   sb.append(street);
+            if (!city.isEmpty())     sb.append(sb.length() > 0 ? ", " : "").append(city);
             if (!province.isEmpty()) sb.append(sb.length() > 0 ? ", " : "").append(province);
-            if (!postal.isEmpty()) sb.append(sb.length() > 0 ? ", " : "").append(postal);
-            if (!country.isEmpty()) sb.append(sb.length() > 0 ? ", " : "").append(country);
+            if (!postal.isEmpty())   sb.append(sb.length() > 0 ? ", " : "").append(postal);
+            if (!country.isEmpty())  sb.append(sb.length() > 0 ? ", " : "").append(country);
 
             saveAddressToDb(sb.toString());
+            clearDialogReferences();
             dialog.dismiss();
         });
 
         dialog.show();
     }
-    
+
+    /** Hapus referensi dialog fields saat dialog ditutup */
+    private void clearDialogReferences() {
+        dialogEtStreet     = null;
+        dialogEtCity       = null;
+        dialogEtProvince   = null;
+        dialogEtPostalCode = null;
+        dialogEtCountry    = null;
+    }
+
     private void saveAddressToDb(String newAddress) {
         executorService.execute(() -> {
             userDao.updateAddress(sessionManager.getUserId(), newAddress);
@@ -243,6 +298,146 @@ public class SettingsFragment extends Fragment {
                 });
             }
         });
+    }
+
+    // ─── Fused Location ──────────────────────────────────────────────────────────
+
+    /**
+     * Minta permission lokasi lalu ambil lokasi untuk mengisi dialog.
+     */
+    private void requestLocationForDialog() {
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            fetchLocationForDialog();
+        } else {
+            requestPermissions(
+                    new String[]{
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                    },
+                    REQUEST_LOCATION_PERM);
+        }
+    }
+
+    /**
+     * Ambil lokasi saat ini dan isi field-field di dialog.
+     */
+    private void fetchLocationForDialog() {
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+        Toast.makeText(requireContext(), "📍 Mendapatkan lokasi...", Toast.LENGTH_SHORT).show();
+
+        fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+                .addOnSuccessListener(location -> {
+                    if (location != null) {
+                        reverseGeocodeToDialog(location.getLatitude(), location.getLongitude());
+                    } else {
+                        fusedLocationClient.getLastLocation()
+                                .addOnSuccessListener(lastLocation -> {
+                                    if (lastLocation != null) {
+                                        reverseGeocodeToDialog(
+                                                lastLocation.getLatitude(),
+                                                lastLocation.getLongitude());
+                                    } else {
+                                        Toast.makeText(requireContext(),
+                                                "⚠️ Lokasi tidak dapat ditemukan. Pastikan GPS aktif.",
+                                                Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                    }
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(requireContext(),
+                                "⚠️ Gagal mendapatkan lokasi: " + e.getMessage(),
+                                Toast.LENGTH_LONG).show());
+    }
+
+    /**
+     * Reverse geocoding dan isi field-field dialog secara terpisah.
+     */
+    private void reverseGeocodeToDialog(double lat, double lng) {
+        executorService.execute(() -> {
+            try {
+                Geocoder geocoder = new Geocoder(requireContext(), new Locale("id", "ID"));
+                List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
+                if (addresses != null && !addresses.isEmpty()) {
+                    Address addr = addresses.get(0);
+
+                    // Ambil komponen alamat
+                    String street   = buildStreetName(addr);
+                    String city     = !TextUtils.isEmpty(addr.getLocality()) ? addr.getLocality()
+                                    : (!TextUtils.isEmpty(addr.getSubAdminArea()) ? addr.getSubAdminArea() : "");
+                    String province = !TextUtils.isEmpty(addr.getAdminArea()) ? addr.getAdminArea() : "";
+                    String postal   = !TextUtils.isEmpty(addr.getPostalCode()) ? addr.getPostalCode() : "";
+                    String country  = !TextUtils.isEmpty(addr.getCountryName()) ? addr.getCountryName() : "";
+
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            // Isi hanya jika dialog masih terbuka (referensi tidak null)
+                            if (dialogEtStreet != null)     dialogEtStreet.setText(street);
+                            if (dialogEtCity != null)       dialogEtCity.setText(city);
+                            if (dialogEtProvince != null)   dialogEtProvince.setText(province);
+                            if (dialogEtPostalCode != null) dialogEtPostalCode.setText(postal);
+                            if (dialogEtCountry != null)    dialogEtCountry.setText(country);
+
+                            Toast.makeText(requireContext(),
+                                    "✅ Lokasi berhasil dideteksi!", Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                } else {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() ->
+                                Toast.makeText(requireContext(),
+                                        "⚠️ Alamat tidak ditemukan untuk lokasi ini.",
+                                        Toast.LENGTH_LONG).show());
+                    }
+                }
+            } catch (IOException e) {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() ->
+                            Toast.makeText(requireContext(),
+                                    "⚠️ Geocoding gagal. Periksa koneksi internet.",
+                                    Toast.LENGTH_LONG).show());
+                }
+            }
+        });
+    }
+
+    /**
+     * Susun nama jalan dari komponen thoroughfare + subThoroughfare.
+     */
+    private String buildStreetName(Address addr) {
+        StringBuilder sb = new StringBuilder();
+        if (!TextUtils.isEmpty(addr.getSubThoroughfare()))
+            sb.append(addr.getSubThoroughfare()).append(" ");
+        if (!TextUtils.isEmpty(addr.getThoroughfare()))
+            sb.append(addr.getThoroughfare());
+        if (sb.length() == 0 && !TextUtils.isEmpty(addr.getSubLocality()))
+            sb.append(addr.getSubLocality());
+        return sb.toString().trim();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_LOCATION_PERM) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                fetchLocationForDialog();
+            } else {
+                Toast.makeText(requireContext(),
+                        "⚠️ Izin lokasi diperlukan untuk fitur ini.",
+                        Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     /**
