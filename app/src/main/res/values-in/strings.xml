@@ -107,4 +107,15 @@
     <!-- General -->
     <string name="btn_ok">OK</string>
     <string name="hello_user">Halo, </string>
+
+    <!-- Map Picker -->
+    <string name="map_picker_title">Pilih Lokasi</string>
+    <string name="map_search_hint">Cari lokasi…</string>
+    <string name="map_my_location">Lokasi Saya</string>
+    <string name="map_confirm_location">Pilih Lokasi Ini</string>
+    <string name="map_detecting_address">Mendeteksi alamat…</string>
+    <string name="map_move_pin_hint">Geser peta untuk memilih lokasi</string>
+    <string name="map_wait_address">Mohon tunggu, mendeteksi alamat…</string>
+    <string name="map_pin_desc">Pin lokasi</string>
+    <string name="map_pick_on_map">📍  Pilih di Peta</string>
 </resources>

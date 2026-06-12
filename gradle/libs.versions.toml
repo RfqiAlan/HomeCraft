@@ -18,6 +18,8 @@ swiperefreshlayout = "1.1.0"
 viewpager2 = "1.1.0"
 lottie = "6.4.0"
 biometric = "1.1.0"
+osmdroid = "6.1.20"
+shimmer = "0.5.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -50,6 +52,8 @@ swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefre
 viewpager2 = { group = "androidx.viewpager2", name = "viewpager2", version.ref = "viewpager2" }
 lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }
 biometric = { group = "androidx.biometric", name = "biometric", version.ref = "biometric" }
+osmdroid = { group = "org.osmdroid", name = "osmdroid-android", version.ref = "osmdroid" }
+shimmer = { group = "com.facebook.shimmer", name = "shimmer", version.ref = "shimmer" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

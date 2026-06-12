@@ -11,4 +11,5 @@
     <color name="badge_recommend_bg">#1F27AE60</color> <!-- 12% opacity Green -->
     <color name="window_background">#121212</color>
     <color name="category_selected_icon">#121212</color>
+    <color name="shimmer_bg">#2A2A2A</color>
 </resources>

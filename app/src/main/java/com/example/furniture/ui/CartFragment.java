@@ -37,7 +37,8 @@ public class CartFragment extends Fragment implements CartAdapter.OnCartActionLi
     // ─── Views ───────────────────────────────────────────────────────────────────
 
     private RecyclerView recyclerView;
-    private TextView tvEmpty;
+    private View layoutEmpty;
+    private View layoutBottom;
     private TextView tvTotal;
     private Button btnCheckout;
 
@@ -79,7 +80,8 @@ public class CartFragment extends Fragment implements CartAdapter.OnCartActionLi
 
     private void initView(View view) {
         recyclerView = view.findViewById(R.id.rv_cart);
-        tvEmpty      = view.findViewById(R.id.tv_cart_empty);
+        layoutEmpty  = view.findViewById(R.id.layout_empty_cart);
+        layoutBottom = view.findViewById(R.id.layout_bottom);
         tvTotal      = view.findViewById(R.id.tv_cart_total);
         btnCheckout  = view.findViewById(R.id.btn_checkout);
 
@@ -168,18 +170,14 @@ public class CartFragment extends Fragment implements CartAdapter.OnCartActionLi
 
     private void showContent() {
         if (recyclerView != null) recyclerView.setVisibility(View.VISIBLE);
-        if (tvEmpty != null) tvEmpty.setVisibility(View.GONE);
-        if (btnCheckout != null) btnCheckout.setVisibility(View.VISIBLE);
+        if (layoutEmpty != null) layoutEmpty.setVisibility(View.GONE);
+        if (layoutBottom != null) layoutBottom.setVisibility(View.VISIBLE);
     }
 
     private void showEmptyState() {
         if (recyclerView != null) recyclerView.setVisibility(View.GONE);
-        if (tvTotal != null) tvTotal.setVisibility(View.GONE);
-        if (btnCheckout != null) btnCheckout.setVisibility(View.GONE);
-        if (tvEmpty != null) {
-            tvEmpty.setText("Keranjang belanja kosong.\nTambahkan produk dari halaman detail.");
-            tvEmpty.setVisibility(View.VISIBLE);
-        }
+        if (layoutBottom != null) layoutBottom.setVisibility(View.GONE);
+        if (layoutEmpty != null) layoutEmpty.setVisibility(View.VISIBLE);
     }
 
     // ─── CartAdapter.OnCartActionListener ────────────────────────────────────────

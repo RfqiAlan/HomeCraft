@@ -19,3 +19,25 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+# Retrofit
+-dontwarn retrofit2.**
+-keep class retrofit2.** { *; }
+-keepattributes Signature
+-keepattributes Exceptions
+
+# Gson
+-keep class com.google.gson.** { *; }
+-keep class com.google.gson.stream.** { *; }
+-keep class sun.misc.Unsafe { *; }
+-keep class com.google.gson.examples.android.model.** { *; }
+
+# Keep Model classes for Gson serialization/deserialization
+-keep class com.example.furniture.model.** { *; }
+
+# Lottie
+-keep class com.airbnb.lottie.** { *; }
+-dontwarn com.airbnb.lottie.**
+
+# OSM Droid
+-keep class org.osmdroid.** { *; }
+-dontwarn org.osmdroid.**

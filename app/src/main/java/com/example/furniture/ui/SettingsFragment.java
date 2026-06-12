@@ -45,6 +45,7 @@ import java.util.Locale;
 public class SettingsFragment extends Fragment {
 
     private static final int REQUEST_LOCATION_PERM = 301;
+    private static final int REQUEST_MAP_PICKER    = 302;
 
     // ─── Views ───────────────────────────────────────────────────────────────────
 
@@ -57,8 +58,9 @@ public class SettingsFragment extends Fragment {
     private TextView tvUserEmail;
     private Button btnLogout;
     private Button btnLogin;
-    private com.google.android.material.button.MaterialButton btnLangEn;
-    private com.google.android.material.button.MaterialButton btnLangId;
+    private android.widget.RadioGroup rgLanguage;
+    private android.widget.RadioButton rbLangEn;
+    private android.widget.RadioButton rbLangId;
 
     private View layoutShippingAddress;
     private TextView tvCurrentAddress;
@@ -148,15 +150,11 @@ public class SettingsFragment extends Fragment {
         }
 
         // Tombol toggle bahasa
-        btnLangEn = view.findViewById(R.id.btn_lang_en);
-        btnLangId = view.findViewById(R.id.btn_lang_id);
+        rgLanguage = view.findViewById(R.id.rg_language);
+        rbLangEn = view.findViewById(R.id.rb_lang_en);
+        rbLangId = view.findViewById(R.id.rb_lang_id);
+        
         updateLanguageButtonState();
-        if (btnLangEn != null) {
-            btnLangEn.setOnClickListener(v -> switchLanguage(Constants.LANG_EN));
-        }
-        if (btnLangId != null) {
-            btnLangId.setOnClickListener(v -> switchLanguage(Constants.LANG_ID));
-        }
 
         // Tombol login
         if (btnLogin != null) {
@@ -170,6 +168,8 @@ public class SettingsFragment extends Fragment {
         if (layoutShippingAddress != null) {
             layoutShippingAddress.setOnClickListener(v -> showEditAddressDialog());
         }
+
+
     }
 
     /**
@@ -262,9 +262,12 @@ public class SettingsFragment extends Fragment {
             dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }
 
-        // Tombol deteksi lokasi GPS
+        // Tombol deteksi lokasi → buka Map Picker
         if (btnDetectLocation != null) {
-            btnDetectLocation.setOnClickListener(v -> requestLocationForDialog());
+            btnDetectLocation.setOnClickListener(v -> {
+                Intent mapIntent = new Intent(requireContext(), MapPickerActivity.class);
+                startActivityForResult(mapIntent, REQUEST_MAP_PICKER);
+            });
         }
 
         btnCancel.setOnClickListener(v -> {
@@ -457,6 +460,38 @@ public class SettingsFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, android.content.Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_MAP_PICKER
+                && resultCode == android.app.Activity.RESULT_OK && data != null) {
+            String address = data.getStringExtra(Constants.EXTRA_SELECTED_ADDRESS);
+            if (address != null && !address.isEmpty()) {
+                // Parse alamat dari map ke field-field dialog (jika masih terbuka)
+                String[] parts = address.split(", ");
+                if (dialogEtStreet != null && parts.length >= 1) dialogEtStreet.setText(parts[0]);
+                if (dialogEtCity != null && parts.length >= 2) dialogEtCity.setText(parts[1]);
+                if (dialogEtProvince != null && parts.length >= 3) dialogEtProvince.setText(parts[2]);
+                if (dialogEtPostalCode != null && parts.length >= 4) dialogEtPostalCode.setText(parts[3]);
+                if (dialogEtCountry != null && parts.length >= 5) {
+                    StringBuilder country = new StringBuilder();
+                    for (int i = 4; i < parts.length; i++) {
+                        country.append(parts[i]).append(i == parts.length - 1 ? "" : ", ");
+                    }
+                    dialogEtCountry.setText(country.toString());
+                }
+
+                // Jika dialog sudah tertutup, simpan langsung ke DB
+                if (dialogEtStreet == null) {
+                    saveAddressToDb(address);
+                }
+
+                Toast.makeText(requireContext(), getString(R.string.location_detected),
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
     // ─── Language ─────────────────────────────────────────────────────────────────
 
     /**
@@ -503,52 +538,30 @@ public class SettingsFragment extends Fragment {
     }
 
     /**
-     * Perbarui tampilan tombol bahasa: yang aktif tampil filled (solid), yang tidak tampil outlined.
+     * Perbarui tampilan tombol bahasa menggunakan RadioGroup
      */
     private void updateLanguageButtonState() {
-        if (btnLangEn == null || btnLangId == null || getContext() == null) return;
+        if (rbLangEn == null || rbLangId == null || getContext() == null) return;
         boolean isId = LanguageManager.isIndonesian(requireContext());
 
-        // Resolve dynamic colors from current theme
-        int activeBgColor = 0;
-        int activeTextColor = 0;
-        android.util.TypedValue typedValue = new android.util.TypedValue();
-        
-        if (requireContext().getTheme().resolveAttribute(android.R.attr.textColorPrimary, typedValue, true)) {
-            activeBgColor = typedValue.data; // Active background (black in light, white in dark)
-        } else {
-            activeBgColor = androidx.core.content.ContextCompat.getColor(requireContext(), android.R.color.black);
-        }
-        
-        if (requireContext().getTheme().resolveAttribute(android.R.attr.colorBackground, typedValue, true)) {
-            activeTextColor = typedValue.data; // Active text (white in light, black in dark)
-        } else {
-            activeTextColor = android.graphics.Color.WHITE;
-        }
-        
-        int inactiveTextColor = 0;
-        if (requireContext().getTheme().resolveAttribute(android.R.attr.textColorSecondary, typedValue, true)) {
-            inactiveTextColor = typedValue.data;
-        } else {
-            inactiveTextColor = androidx.core.content.ContextCompat.getColor(requireContext(), android.R.color.darker_gray);
+        if (rgLanguage != null) {
+            rgLanguage.setOnCheckedChangeListener(null);
         }
 
-        // Tombol EN
         if (isId) {
-            btnLangEn.setBackgroundTintList(null);
-            btnLangEn.setTextColor(inactiveTextColor);
+            rbLangId.setChecked(true);
         } else {
-            btnLangEn.setBackgroundTintList(android.content.res.ColorStateList.valueOf(activeBgColor));
-            btnLangEn.setTextColor(activeTextColor);
+            rbLangEn.setChecked(true);
         }
 
-        // Tombol ID
-        if (isId) {
-            btnLangId.setBackgroundTintList(android.content.res.ColorStateList.valueOf(activeBgColor));
-            btnLangId.setTextColor(activeTextColor);
-        } else {
-            btnLangId.setBackgroundTintList(null);
-            btnLangId.setTextColor(inactiveTextColor);
+        if (rgLanguage != null) {
+            rgLanguage.setOnCheckedChangeListener((group, checkedId) -> {
+                if (checkedId == R.id.rb_lang_en) {
+                    switchLanguage(Constants.LANG_EN);
+                } else if (checkedId == R.id.rb_lang_id) {
+                    switchLanguage(Constants.LANG_ID);
+                }
+            });
         }
     }
 
@@ -583,9 +596,7 @@ public class SettingsFragment extends Fragment {
 
     private void applyTheme() {
         ThemeManager.applyTheme(requireContext());
-        if (getActivity() != null) {
-            getActivity().recreate();
-        }
+        // AppCompatDelegate.setDefaultNightMode() will automatically recreate the Activity
     }
 
     private void updateThemeLabel(boolean isDarkMode) {

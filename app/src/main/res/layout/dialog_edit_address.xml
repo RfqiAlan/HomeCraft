@@ -20,14 +20,14 @@
             android:textStyle="bold"
             android:layout_marginBottom="12dp" />
 
-        <!-- Tombol Deteksi Lokasi GPS -->
+        <!-- Tombol Pilih di Peta -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_detect_location"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginBottom="16dp"
-            android:text="📍  Gunakan Lokasi Saat Ini"
+            android:text="@string/map_pick_on_map"
             android:textSize="14sp"
             android:textColor="?android:attr/textColorPrimary"
             app:strokeColor="?android:attr/textColorPrimary"

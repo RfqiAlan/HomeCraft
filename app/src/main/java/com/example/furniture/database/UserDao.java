@@ -3,8 +3,8 @@ package com.example.furniture.database;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-
 import com.example.furniture.model.User;
+import com.example.furniture.utils.HashUtils;
 
 /**
  * DAO untuk mengelola data user (registrasi, login, profil).
@@ -36,7 +36,11 @@ public class UserDao {
         ContentValues values = new ContentValues();
         values.put("name", user.getName());
         values.put("email", user.getEmail());
-        values.put("password", user.getPassword());
+        
+        // Hash password before saving
+        String hashedPassword = HashUtils.sha256(user.getPassword());
+        values.put("password", hashedPassword);
+        
         values.put("address", user.getAddress() != null ? user.getAddress() : "");
         values.put("phone_number", user.getPhoneNumber() != null ? user.getPhoneNumber() : "");
         values.put("default_payment", user.getDefaultPayment() != null ? user.getDefaultPayment() : "");
@@ -53,10 +57,12 @@ public class UserDao {
      */
     public User login(String email, String password) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String hashedPassword = HashUtils.sha256(password);
+        
         Cursor cursor = db.query(TABLE,
                 null,
                 "email = ? AND password = ?",
-                new String[]{email, password},
+                new String[]{email, hashedPassword},
                 null, null, null, "1");
 
         User user = null;

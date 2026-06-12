@@ -7,6 +7,7 @@
     android:background="?android:attr/colorBackground"
     tools:context=".ui.FavoriteFragment">
 
+    <!-- Top App Bar Area -->
     <TextView
         android:id="@+id/tv_title"
         android:layout_width="wrap_content"
@@ -14,7 +15,7 @@
         android:layout_marginTop="24dp"
         android:text="Favorites"
         android:textColor="?android:attr/textColorPrimary"
-        android:textSize="18sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,47 +27,88 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="24dp"
-        android:layout_marginBottom="16dp"
         android:clipToPadding="false"
+        android:paddingBottom="120dp"
         tools:listitem="@layout/item_favorite"
         tools:itemCount="5"
-        app:layout_constraintBottom_toTopOf="@id/btn_add_all"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_title" />
 
     <!-- Empty State -->
-    <TextView
-        android:id="@+id/tv_favorite_empty"
+    <LinearLayout
+        android:id="@+id/layout_empty_favorite"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:gravity="center"
-        android:text="Belum ada produk favorit."
-        android:textColor="?android:attr/textColorSecondary"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+        
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/ic_heart"
+            app:tint="?attr/colorSurfaceVariant"/>
+            
+        <TextView
+            android:id="@+id/tv_favorite_empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="No favorites yet"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="18sp"
+            android:textStyle="bold"/>
+            
+        <TextView
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Tap the heart icon on any product to save it here for later."
+            android:textAlignment="center"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="14sp"/>
+    </LinearLayout>
 
-    <!-- Add All Button -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_add_all"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="24dp"
-        app:backgroundTint="#242424"
-        app:cornerRadius="4dp"
-        app:elevation="0dp"
-        style="@style/Widget.MaterialComponents.Button"
-        android:text="Add all to my cart"
-        android:textAllCaps="false"
-        android:textColor="@color/white"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+    <!-- Floating Bottom Action Area -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/layout_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardElevation="16dp"
+        app:cardCornerRadius="32dp"
+        android:layout_marginBottom="-16dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp"
+            android:paddingTop="24dp"
+            android:paddingBottom="40dp"
+            android:background="?android:attr/colorBackground">
+
+            <!-- Add All Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_add_all"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                app:backgroundTint="#212121"
+                app:cornerRadius="16dp"
+                app:elevation="4dp"
+                style="@style/Widget.MaterialComponents.Button"
+                android:text="Add all to my cart"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

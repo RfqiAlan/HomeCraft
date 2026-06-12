@@ -2,6 +2,14 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
 android {
     namespace 'com.example.furniture'
     compileSdk 36
@@ -14,10 +22,19 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        
+        // Define API Key from local.properties
+        def rapidApiKey = localProperties.getProperty('RAPID_API_KEY') ?: '""'
+        buildConfigField "String", "RAPID_API_KEY", rapidApiKey
     }
 
     buildTypes {
         release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -68,6 +85,12 @@ dependencies {
 
     // Biometric Authentication
     implementation libs.biometric
+
+    // OpenStreetMap
+    implementation libs.osmdroid
+
+    // Shimmer
+    implementation libs.shimmer
 
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit

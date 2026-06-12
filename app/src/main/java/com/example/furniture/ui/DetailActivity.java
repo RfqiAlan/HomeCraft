@@ -50,15 +50,15 @@ public class DetailActivity extends AppCompatActivity {
     private ViewPager2 vpProductImages;
     private LinearLayout llIndicators;
     private TextView tvName;
-    private TextView tvPrice;
+    private TextView tvTotalPrice;
     private TextView tvRating;
     private TextView tvDescription;
     private TextView tvCategory;
     private TextView tvQty;
     private Button btnAddToCart;
     private ImageButton btnFavorite;
-    private com.google.android.material.button.MaterialButton btnQtyPlus;
-    private com.google.android.material.button.MaterialButton btnQtyMinus;
+    private ImageButton btnQtyPlus;
+    private ImageButton btnQtyMinus;
     private ProgressBar progressBar;
     private TextView tvError;
     private TextView tvReviewSummary;
@@ -80,10 +80,17 @@ public class DetailActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Aktifkan transisi window untuk Shared Element Transition
+        getWindow().requestFeature(android.view.Window.FEATURE_ACTIVITY_TRANSITIONS);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
         initView();
+        
+        // Pasang transitionName ke ViewPager gambar produk
+        androidx.core.view.ViewCompat.setTransitionName(vpProductImages, "product_image");
+
         getIntentData();
         loadProductDetail();
     }
@@ -100,7 +107,7 @@ public class DetailActivity extends AppCompatActivity {
         vpProductImages = findViewById(R.id.vp_product_images);
         llIndicators    = findViewById(R.id.ll_indicators);
         tvName          = findViewById(R.id.tv_detail_name);
-        tvPrice         = findViewById(R.id.tv_detail_price);
+        tvTotalPrice    = findViewById(R.id.tv_detail_total_price);
         tvRating        = findViewById(R.id.tv_detail_rating);
         tvDescription   = findViewById(R.id.tv_detail_description);
         tvCategory      = findViewById(R.id.tv_detail_category);
@@ -144,11 +151,13 @@ public class DetailActivity extends AppCompatActivity {
         if (btnQtyPlus != null) btnQtyPlus.setOnClickListener(v -> {
             qty++;
             tvQty.setText(String.format("%02d", qty));
+            updateTotalPrice();
         });
         if (btnQtyMinus != null) btnQtyMinus.setOnClickListener(v -> {
             if (qty > 1) {
                 qty--;
                 tvQty.setText(String.format("%02d", qty));
+                updateTotalPrice();
             }
         });
     }
@@ -226,7 +235,7 @@ public class DetailActivity extends AppCompatActivity {
 
     private void showProductDetail(Product product) {
         if (tvName     != null) tvName.setText(product.getName());
-        if (tvPrice    != null) tvPrice.setText(formatPrice(product.getPrice()));
+        updateTotalPrice();
 
         String ratingText = product.getRating() + "  (" + product.getReviewCount() + " reviews)";
         if (tvRating   != null) tvRating.setText(ratingText);
@@ -419,5 +428,12 @@ public class DetailActivity extends AppCompatActivity {
 
     private String formatPrice(double price) {
         return LanguageManager.formatPrice(this, price);
+    }
+    
+    private void updateTotalPrice() {
+        if (currentProduct != null && tvTotalPrice != null) {
+            double total = currentProduct.getPrice() * qty;
+            tvTotalPrice.setText(formatPrice(total));
+        }
     }
 }

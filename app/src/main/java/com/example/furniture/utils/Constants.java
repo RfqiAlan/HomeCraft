@@ -10,9 +10,7 @@ public class Constants {
     public static final String BASE_URL = "https://kohls.p.rapidapi.com/";
     public static final String API_HOST = "kohls.p.rapidapi.com";
 
-    // PENTING: Key RapidAPI. Jangan commit key asli ke repo publik.
-    public static final String API_KEY  =
-            "aa06c32967msh6c6dee9e1ada3e4p125fcajsn142b7625bed6";
+    // Key is now stored in BuildConfig.RAPID_API_KEY
 
     // ─── Intent Extra Keys ───────────────────────────────────────────────────────
     public static final String EXTRA_PRODUCT_ID = "product_id";
@@ -65,6 +63,14 @@ public class Constants {
     public static final double DEFAULT_STORE_LATITUDE  = 33.9733;
     public static final double DEFAULT_STORE_LONGITUDE = -118.2487;
     public static final int    DEFAULT_STORE_RADIUS    = 25;
+
+    // ─── OpenStreetMap / Nominatim ─────────────────────────────────────────────
+    public static final String NOMINATIM_BASE_URL =
+            "https://nominatim.openstreetmap.org/";
+    public static final double DEFAULT_MAP_ZOOM    = 17.0;
+    public static final String EXTRA_SELECTED_ADDRESS = "selected_address";
+    public static final String EXTRA_SELECTED_LAT     = "selected_lat";
+    public static final String EXTRA_SELECTED_LNG     = "selected_lng";
 
     // ─── Payment Methods ─────────────────────────────────────────────────────────
     public static final String[] PAYMENT_METHODS = {

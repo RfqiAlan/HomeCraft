@@ -59,4 +59,14 @@ public class SessionManager {
     public String getUserEmail() {
         return prefs.getString(KEY_USER_EMAIL, "");
     }
+
+    // ─── First Time / Onboarding ────────────────────────────────────────────────
+
+    public boolean isFirstTimeLaunch() {
+        return prefs.getBoolean("is_first_time_launch", true);
+    }
+
+    public void setFirstTimeLaunch(boolean isFirstTime) {
+        prefs.edit().putBoolean("is_first_time_launch", isFirstTime).apply();
+    }
 }

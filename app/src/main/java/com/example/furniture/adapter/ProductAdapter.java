@@ -32,7 +32,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     // ─── Interface ───────────────────────────────────────────────────────────────
 
     public interface OnProductClickListener {
-        void onProductClick(Product product);
+        void onProductClick(Product product, View sharedImageView);
         void onFavoriteClick(Product product);
     }
 
@@ -213,9 +213,12 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                     .error(R.drawable.ic_image_placeholder)
                     .into(imgProduct);
 
+            // Set unique transition name based on product ID
+            androidx.core.view.ViewCompat.setTransitionName(imgProduct, "product_image_" + product.getProductId());
+
             // Klik item → buka DetailActivity
             itemView.setOnClickListener(v -> {
-                if (listener != null) listener.onProductClick(product);
+                if (listener != null) listener.onProductClick(product, imgProduct);
             });
 
             // Klik tombol favorit

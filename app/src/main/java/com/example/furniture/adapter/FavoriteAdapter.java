@@ -32,6 +32,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.Favori
     public interface OnFavoriteClickListener {
         void onProductClick(FavoriteItem item);
         void onRemoveClick(FavoriteItem item);
+        void onAddToCartClick(FavoriteItem item);
     }
 
     // ─── Fields ──────────────────────────────────────────────────────────────────
@@ -95,13 +96,15 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.Favori
         private final TextView tvName;
         private final TextView tvPrice;
         private final ImageButton btnRemove;
+        private final View btnAddToCart;
 
         FavoriteViewHolder(@NonNull View itemView) {
             super(itemView);
-            imgProduct = itemView.findViewById(R.id.img_favorite_product);
-            tvName     = itemView.findViewById(R.id.tv_favorite_name);
-            tvPrice    = itemView.findViewById(R.id.tv_favorite_price);
-            btnRemove  = itemView.findViewById(R.id.btn_remove_favorite);
+            imgProduct   = itemView.findViewById(R.id.img_favorite_product);
+            tvName       = itemView.findViewById(R.id.tv_favorite_name);
+            tvPrice      = itemView.findViewById(R.id.tv_favorite_price);
+            btnRemove    = itemView.findViewById(R.id.btn_remove_favorite);
+            btnAddToCart = itemView.findViewById(R.id.btn_add_to_cart_item);
         }
 
         void bind(FavoriteItem item) {
@@ -123,6 +126,13 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.Favori
             if (btnRemove != null) {
                 btnRemove.setOnClickListener(v -> {
                     if (listener != null) listener.onRemoveClick(item);
+                });
+            }
+
+            // Klik tombol Add to Cart
+            if (btnAddToCart != null) {
+                btnAddToCart.setOnClickListener(v -> {
+                    if (listener != null) listener.onAddToCartClick(item);
                 });
             }
         }

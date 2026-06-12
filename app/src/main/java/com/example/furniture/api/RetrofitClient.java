@@ -2,6 +2,7 @@ package com.example.furniture.api;
 
 import com.example.furniture.model.Product;
 import com.example.furniture.utils.Constants;
+import com.example.furniture.BuildConfig;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -59,7 +60,7 @@ public class RetrofitClient {
                 .addInterceptor(chain -> {
                     Request original = chain.request();
                     Request request = original.newBuilder()
-                            .header("x-rapidapi-key", Constants.API_KEY)
+                            .header("x-rapidapi-key", BuildConfig.RAPID_API_KEY)
                             .header("x-rapidapi-host", Constants.API_HOST)
                             .header("Content-Type", "application/json")
                             .method(original.method(), original.body())

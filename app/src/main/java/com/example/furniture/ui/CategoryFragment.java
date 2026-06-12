@@ -48,6 +48,7 @@ public class CategoryFragment extends Fragment
     private ProgressBar progressBar;
     private TextView tvSectionTitle;
     private TextView tvError;
+    private com.facebook.shimmer.ShimmerFrameLayout shimmerContainer;
 
     // ─── Data ─────────────────────────────────────────────────────────────────────
 
@@ -71,6 +72,22 @@ public class CategoryFragment extends Fragment
         loadCategoriesFromApi();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (shimmerContainer != null && shimmerContainer.getVisibility() == View.VISIBLE) {
+            shimmerContainer.startShimmer();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        if (shimmerContainer != null) {
+            shimmerContainer.stopShimmer();
+        }
+        super.onPause();
+    }
+
     // ─── Init ────────────────────────────────────────────────────────────────────
 
     private void initView(View view) {
@@ -79,6 +96,7 @@ public class CategoryFragment extends Fragment
         progressBar        = view.findViewById(R.id.progress_bar_category);
         tvSectionTitle     = view.findViewById(R.id.tv_section_title);
         tvError            = view.findViewById(R.id.tv_category_error);
+        shimmerContainer   = view.findViewById(R.id.shimmer_category_container);
 
         // Category RecyclerView (horizontal)
         categoryAdapter = new CategoryAdapter(requireContext(), this);
@@ -229,11 +247,21 @@ public class CategoryFragment extends Fragment
     // ─── UI State ────────────────────────────────────────────────────────────────
 
     private void showLoading() {
-        if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
+        if (shimmerContainer != null) {
+            shimmerContainer.setVisibility(View.VISIBLE);
+            shimmerContainer.startShimmer();
+        } else if (progressBar != null) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
         if (tvError != null) tvError.setVisibility(View.GONE);
+        if (rvCategoryProducts != null) rvCategoryProducts.setVisibility(View.GONE);
     }
 
     private void hideLoading() {
+        if (shimmerContainer != null) {
+            shimmerContainer.stopShimmer();
+            shimmerContainer.setVisibility(View.GONE);
+        }
         if (progressBar != null) progressBar.setVisibility(View.GONE);
     }
 
@@ -254,10 +282,21 @@ public class CategoryFragment extends Fragment
     // ─── ProductAdapter.OnProductClickListener ───────────────────────────────────
 
     @Override
-    public void onProductClick(com.example.furniture.model.Product product) {
+    public void onProductClick(com.example.furniture.model.Product product, View sharedImageView) {
         Intent intent = new Intent(requireContext(), DetailActivity.class);
         intent.putExtra(Constants.EXTRA_PRODUCT_ID, product.getProductId());
-        startActivity(intent);
+        
+        if (sharedImageView != null) {
+            androidx.core.app.ActivityOptionsCompat options = 
+                androidx.core.app.ActivityOptionsCompat.makeSceneTransitionAnimation(
+                    requireActivity(), 
+                    sharedImageView, 
+                    "product_image" // transitionName will be expected in DetailActivity
+                );
+            startActivity(intent, options.toBundle());
+        } else {
+            startActivity(intent);
+        }
     }
 
     @Override

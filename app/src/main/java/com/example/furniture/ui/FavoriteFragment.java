@@ -32,12 +32,14 @@ public class FavoriteFragment extends Fragment implements FavoriteAdapter.OnFavo
     // ─── Views ───────────────────────────────────────────────────────────────────
 
     private RecyclerView recyclerView;
-    private TextView tvEmpty;
+    private View layoutEmpty;
+    private View layoutBottom;
 
     // ─── Data ─────────────────────────────────────────────────────────────────────
 
     private FavoriteAdapter favoriteAdapter;
     private FavoriteDao favoriteDao;
+    private com.example.furniture.database.CartDao cartDao;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     // ─── Lifecycle ───────────────────────────────────────────────────────────────
@@ -73,13 +75,20 @@ public class FavoriteFragment extends Fragment implements FavoriteAdapter.OnFavo
 
     private void initView(View view) {
         recyclerView = view.findViewById(R.id.rv_favorites);
-        tvEmpty      = view.findViewById(R.id.tv_favorite_empty);
+        layoutEmpty  = view.findViewById(R.id.layout_empty_favorite);
+        layoutBottom = view.findViewById(R.id.layout_bottom);
 
         favoriteDao = new FavoriteDao(DatabaseHelper.getInstance(requireContext()));
+        cartDao = new com.example.furniture.database.CartDao(DatabaseHelper.getInstance(requireContext()));
 
         favoriteAdapter = new FavoriteAdapter(requireContext(), this);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerView.setAdapter(favoriteAdapter);
+
+        View btnAddAll = view.findViewById(R.id.btn_add_all);
+        if (btnAddAll != null) {
+            btnAddAll.setOnClickListener(v -> addAllToCart());
+        }
     }
 
     // ─── Load Data ───────────────────────────────────────────────────────────────
@@ -110,19 +119,38 @@ public class FavoriteFragment extends Fragment implements FavoriteAdapter.OnFavo
         });
     }
 
+    private void addAllToCart() {
+        executor.execute(() -> {
+            List<FavoriteItem> favorites = favoriteDao.getAllFavorites();
+            if (favorites != null && !favorites.isEmpty()) {
+                for (FavoriteItem item : favorites) {
+                    com.example.furniture.model.Product product = new com.example.furniture.model.Product();
+                    product.setProductId(item.getProductId());
+                    product.setName(item.getName());
+                    product.setPrice(item.getPrice());
+                    product.setImageUrl(item.getImageUrl());
+                    
+                    cartDao.addToCart(product);
+                }
+                requireActivity().runOnUiThread(() -> {
+                    android.widget.Toast.makeText(requireContext(), "All items added to cart!", android.widget.Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
+    }
+
     // ─── UI State ────────────────────────────────────────────────────────────────
 
     private void showContent() {
         if (recyclerView != null) recyclerView.setVisibility(View.VISIBLE);
-        if (tvEmpty != null) tvEmpty.setVisibility(View.GONE);
+        if (layoutBottom != null) layoutBottom.setVisibility(View.VISIBLE);
+        if (layoutEmpty != null) layoutEmpty.setVisibility(View.GONE);
     }
 
     private void showEmptyState() {
         if (recyclerView != null) recyclerView.setVisibility(View.GONE);
-        if (tvEmpty != null) {
-            tvEmpty.setText("Belum ada produk favorit.\nTambahkan dari halaman detail produk.");
-            tvEmpty.setVisibility(View.VISIBLE);
-        }
+        if (layoutBottom != null) layoutBottom.setVisibility(View.GONE);
+        if (layoutEmpty != null) layoutEmpty.setVisibility(View.VISIBLE);
     }
 
     // ─── FavoriteAdapter.OnFavoriteClickListener ─────────────────────────────────
@@ -138,5 +166,21 @@ public class FavoriteFragment extends Fragment implements FavoriteAdapter.OnFavo
     @Override
     public void onRemoveClick(FavoriteItem item) {
         removeFavorite(item);
+    }
+
+    @Override
+    public void onAddToCartClick(FavoriteItem item) {
+        executor.execute(() -> {
+            com.example.furniture.model.Product product = new com.example.furniture.model.Product();
+            product.setProductId(item.getProductId());
+            product.setName(item.getName());
+            product.setPrice(item.getPrice());
+            product.setImageUrl(item.getImageUrl());
+            
+            cartDao.addToCart(product);
+            requireActivity().runOnUiThread(() -> {
+                android.widget.Toast.makeText(requireContext(), "Item added to cart", android.widget.Toast.LENGTH_SHORT).show();
+            });
+        });
     }
 }

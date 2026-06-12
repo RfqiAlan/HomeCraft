@@ -2,28 +2,53 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black">
+    android:background="?android:attr/colorBackground">
 
-    <VideoView
-        android:id="@+id/videoView"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerInParent="true" />
-
-    <TextView
-        android:id="@+id/tvSkip"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="48dp"
-        android:layout_marginEnd="24dp"
-        android:text="Skip"
-        android:fontFamily="@font/poppins"
-        android:textSize="16sp"
-        android:textColor="#88FFFFFF"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:padding="8dp"
-        android:clickable="true"
-        android:focusable="true"/>
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_centerInParent="true">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/ivLogo"
+            android:layout_width="140dp"
+            android:layout_height="140dp"
+            android:src="@drawable/logo"
+            android:scaleType="centerCrop"
+            android:alpha="0"
+            android:scaleX="0.5"
+            android:scaleY="0.5"
+            android:rotation="-15" />
+
+        <TextView
+            android:id="@+id/tvAppName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:textColor="?android:attr/textColorPrimary"
+            android:fontFamily="@font/poppins"
+            android:layout_marginTop="24dp"
+            android:alpha="0"
+            android:translationY="30dp"
+            android:letterSpacing="0.05" />
+            
+        <TextView
+            android:id="@+id/tvTagline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Premium Furniture Experience"
+            android:textSize="14sp"
+            android:textColor="?android:attr/textColorSecondary"
+            android:fontFamily="@font/poppins"
+            android:layout_marginTop="8dp"
+            android:alpha="0"
+            android:translationY="20dp"
+            android:letterSpacing="0.02" />
+
+    </LinearLayout>
+
 </RelativeLayout>

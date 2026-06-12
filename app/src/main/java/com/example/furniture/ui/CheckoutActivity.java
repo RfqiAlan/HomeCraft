@@ -2,6 +2,7 @@ package com.example.furniture.ui;
 
 import android.Manifest;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -12,8 +13,10 @@ import android.nfc.NfcManager;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -65,6 +68,7 @@ public class CheckoutActivity extends AppCompatActivity {
 
     private static final int REQUEST_LOGIN          = 200;
     private static final int REQUEST_LOCATION_PERM  = 201;
+    private static final int REQUEST_MAP_PICKER     = 202;
 
     // ─── Views ───────────────────────────────────────────────────────────────────
 
@@ -74,7 +78,7 @@ public class CheckoutActivity extends AppCompatActivity {
     private EditText etShippingAddress;
     private EditText etPhoneNumber;
     private RadioGroup rgPaymentMethod;
-    private Button btnPlaceOrder;
+    private View btnPlaceOrder;
     private View layoutSuccess;
     private View layoutCheckout;
     private ImageButton btnUseLocationCheckout;
@@ -86,6 +90,8 @@ public class CheckoutActivity extends AppCompatActivity {
     private UserDao userDao;
     private SessionManager sessionManager;
     private List<CartItem> cartItems;
+    private double subtotalPrice = 0.0;
+    private double deliveryPrice = 2.0;
     private double totalPrice = 0.0;
     private User currentUser;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -106,8 +112,7 @@ public class CheckoutActivity extends AppCompatActivity {
         setContentView(R.layout.activity_checkout);
 
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Checkout");
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().hide();
         }
 
         initView();
@@ -191,16 +196,64 @@ public class CheckoutActivity extends AppCompatActivity {
             rvCheckoutItems.setLayoutManager(new LinearLayoutManager(this));
         }
 
+        View btnBack = findViewById(R.id.btn_back_checkout);
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> onBackPressed());
+        }
+
         if (btnPlaceOrder != null) {
             btnPlaceOrder.setOnClickListener(v -> placeOrder());
         }
 
-        // Tombol GPS untuk isi alamat otomatis
+        // Tombol GPS untuk buka Map Picker
         if (btnUseLocationCheckout != null) {
-            btnUseLocationCheckout.setOnClickListener(v -> requestLocationAndFill());
+            btnUseLocationCheckout.setOnClickListener(v -> {
+                Intent mapIntent = new Intent(this, MapPickerActivity.class);
+                startActivityForResult(mapIntent, REQUEST_MAP_PICKER);
+            });
+        }
+
+        // Edit Data
+        ImageView btnEditAddress = findViewById(R.id.btn_edit_address);
+        if (btnEditAddress != null && etShippingAddress != null) {
+            btnEditAddress.setOnClickListener(v -> {
+                etShippingAddress.requestFocus();
+                // Pindah kursor ke akhir teks
+                etShippingAddress.setSelection(etShippingAddress.getText().length());
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) imm.showSoftInput(etShippingAddress, InputMethodManager.SHOW_IMPLICIT);
+            });
+        }
+
+        ImageView btnEditPhone = findViewById(R.id.btn_edit_phone);
+        if (btnEditPhone != null && etPhoneNumber != null) {
+            btnEditPhone.setOnClickListener(v -> {
+                etPhoneNumber.requestFocus();
+                // Pindah kursor ke akhir teks
+                etPhoneNumber.setSelection(etPhoneNumber.getText().length());
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) imm.showSoftInput(etPhoneNumber, InputMethodManager.SHOW_IMPLICIT);
+            });
         }
 
         setupPaymentMethods();
+        
+        RadioGroup rgDeliveryMethod = findViewById(R.id.rg_delivery_method);
+        if (rgDeliveryMethod != null) {
+            rgDeliveryMethod.setOnCheckedChangeListener((group, checkedId) -> {
+                if (checkedId == R.id.rb_delivery_express) {
+                    deliveryPrice = 2.0;
+                } else {
+                    deliveryPrice = 0.0;
+                }
+                totalPrice = subtotalPrice + deliveryPrice;
+                displayCheckoutSummary();
+            });
+            RadioButton rbExpress = findViewById(R.id.rb_delivery_express);
+            if (rbExpress != null) {
+                rbExpress.setText("Express Delivery (1-2 days)\n" + LanguageManager.formatPrice(this, 2.0));
+            }
+        }
     }
 
     /**
@@ -502,6 +555,14 @@ public class CheckoutActivity extends AppCompatActivity {
                 Toast.makeText(this, "Login diperlukan untuk checkout.", Toast.LENGTH_SHORT).show();
                 finish();
             }
+        } else if (requestCode == REQUEST_MAP_PICKER && resultCode == RESULT_OK && data != null) {
+            // Hasil dari MapPickerActivity → isi alamat
+            String address = data.getStringExtra(Constants.EXTRA_SELECTED_ADDRESS);
+            if (etShippingAddress != null && address != null && !address.isEmpty()) {
+                etShippingAddress.setText(address);
+                etShippingAddress.setError(null);
+                Toast.makeText(this, getString(R.string.location_success), Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -515,7 +576,8 @@ public class CheckoutActivity extends AppCompatActivity {
         executor.execute(() -> {
             currentUser = userDao.getUserById(userId);
             cartItems   = cartDao.getCartItems();
-            totalPrice  = cartDao.getCartTotal();
+            subtotalPrice  = cartDao.getCartTotal();
+            totalPrice = subtotalPrice + deliveryPrice;
 
             runOnUiThread(() -> {
                 if (cartItems == null || cartItems.isEmpty()) {
@@ -542,9 +604,15 @@ public class CheckoutActivity extends AppCompatActivity {
 
     private void displayCheckoutSummary() {
         if (tvCheckoutTotal != null) {
-            tvCheckoutTotal.setText(
-                    getString(R.string.total_payment) +
-                    LanguageManager.formatPrice(this, totalPrice));
+            tvCheckoutTotal.setText(LanguageManager.formatPrice(this, totalPrice));
+        }
+        TextView tvCheckoutSubtotal = findViewById(R.id.tv_checkout_subtotal);
+        if (tvCheckoutSubtotal != null) {
+            tvCheckoutSubtotal.setText(LanguageManager.formatPrice(this, subtotalPrice));
+        }
+        TextView tvDeliveryCost = findViewById(R.id.tv_checkout_delivery_cost);
+        if (tvDeliveryCost != null) {
+            tvDeliveryCost.setText(deliveryPrice == 0 ? "Free" : LanguageManager.formatPrice(this, deliveryPrice));
         }
     }
 
@@ -676,9 +744,26 @@ public class CheckoutActivity extends AppCompatActivity {
         if (layoutCheckout != null) layoutCheckout.setVisibility(View.GONE);
         if (layoutSuccess != null) {
             layoutSuccess.setVisibility(View.VISIBLE);
+            
             Button btnBackHome = layoutSuccess.findViewById(R.id.btn_back_to_home);
             if (btnBackHome != null) {
-                btnBackHome.setOnClickListener(v -> finish());
+                btnBackHome.setOnClickListener(v -> {
+                    // Navigate back to Home
+                    Intent intent = new Intent(this, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    finish();
+                });
+            }
+
+            Button btnTrackOrders = layoutSuccess.findViewById(R.id.btn_track_orders);
+            if (btnTrackOrders != null) {
+                btnTrackOrders.setOnClickListener(v -> {
+                    String address = etShippingAddress != null ? etShippingAddress.getText().toString().trim() : "";
+                    Intent intent = new Intent(this, OrderTrackingActivity.class);
+                    intent.putExtra(Constants.EXTRA_SELECTED_ADDRESS, address);
+                    startActivity(intent);
+                });
             }
         }
         Toast.makeText(this, "✅ Pesanan berhasil dibuat!", Toast.LENGTH_LONG).show();

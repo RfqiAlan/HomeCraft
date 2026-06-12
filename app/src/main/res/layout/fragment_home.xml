@@ -18,44 +18,68 @@
             android:layout_height="wrap_content">
 
             <!-- App Bar Area -->
-            <TextView
-                android:id="@+id/tv_make_home"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/layout_header"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
                 android:layout_marginTop="24dp"
-                android:text="Make home"
-                android:textColor="?android:attr/textColorSecondary"
-                android:textSize="16sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
-                android:id="@+id/btn_language"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                android:padding="8dp"
-                android:src="@drawable/ic_language"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:tint="?android:attr/textColorPrimary" />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tv_beautiful"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="BEAUTIFUL"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_make_home" />
+                    <TextView
+                        android:id="@+id/tv_greeting"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Hi, User 👋"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:fontFamily="@font/poppins"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tv_subtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Find your dream furniture"
+                        android:textColor="?android:attr/textColorSecondary"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/btn_language"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="8dp"
+                    android:layout_marginEnd="12dp"
+                    android:src="@drawable/ic_language"
+                    app:tint="?android:attr/textColorPrimary" />
+
+                <!-- Avatar -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    app:cardCornerRadius="22dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="#E0E0E0">
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/logo" />
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
 
             <!-- Search and Filter Section -->
             <LinearLayout
@@ -66,7 +90,7 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginEnd="24dp"
                 android:orientation="horizontal"
-                app:layout_constraintTop_toBottomOf="@id/tv_beautiful">
+                app:layout_constraintTop_toBottomOf="@id/layout_header">
                 
                 <EditText
                     android:id="@+id/et_search"
@@ -101,19 +125,191 @@
                 </androidx.cardview.widget.CardView>
             </LinearLayout>
 
+            <!-- Promo Banner -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cv_promo"
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginTop="24dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="8dp"
+                app:layout_constraintTop_toBottomOf="@id/layout_search_filter">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_promo_banner">
+                    
+                    <TextView
+                        android:id="@+id/tv_promo_tag"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="SPECIAL OFFER"
+                        android:textSize="10sp"
+                        android:fontFamily="@font/poppins"
+                        android:textStyle="bold"
+                        android:textColor="#BDBDBD"
+                        android:letterSpacing="0.1"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="20dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tv_promo_title"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Diskon 50%\nSofa Premium"
+                        android:fontFamily="@font/poppins"
+                        android:textStyle="bold"
+                        android:textSize="20sp"
+                        android:textColor="@color/white"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="4dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tv_promo_tag" />
+                        
+                    <Button
+                        android:id="@+id/btn_shop_now"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="Shop Now"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/poppins"
+                        android:textStyle="bold"
+                        app:cornerRadius="18dp"
+                        app:backgroundTint="@color/white"
+                        android:textColor="#212121"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginBottom="20dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+                        
+                    <ImageView
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:src="@drawable/ic_cat_sofa"
+                        app:tint="#33FFFFFF"
+                        android:layout_marginEnd="16dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:scaleType="fitCenter"/>
+                        
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Quick Categories -->
+            <LinearLayout
+                android:id="@+id/layout_quick_categories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:orientation="horizontal"
+                android:weightSum="4"
+                app:layout_constraintTop_toBottomOf="@id/cv_promo">
+                
+                <LinearLayout android:id="@+id/layout_cat_sofa" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:orientation="vertical" android:clickable="true" android:focusable="true">
+                    <androidx.cardview.widget.CardView android:id="@+id/cv_cat_sofa" android:layout_width="56dp" android:layout_height="56dp" app:cardCornerRadius="28dp" app:cardElevation="0dp" app:cardBackgroundColor="?attr/colorSurfaceVariant">
+                        <ImageView android:id="@+id/iv_cat_sofa" android:layout_width="24dp" android:layout_height="24dp" android:layout_gravity="center" android:src="@drawable/ic_cat_sofa" app:tint="?android:attr/textColorPrimary" />
+                    </androidx.cardview.widget.CardView>
+                    <TextView android:id="@+id/tv_cat_sofa" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Sofa" android:textSize="12sp" android:textColor="?android:attr/textColorSecondary"/>
+                </LinearLayout>
+
+                <LinearLayout android:id="@+id/layout_cat_chair" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:orientation="vertical" android:clickable="true" android:focusable="true">
+                    <androidx.cardview.widget.CardView android:id="@+id/cv_cat_chair" android:layout_width="56dp" android:layout_height="56dp" app:cardCornerRadius="28dp" app:cardElevation="0dp" app:cardBackgroundColor="?attr/colorSurfaceVariant">
+                        <ImageView android:id="@+id/iv_cat_chair" android:layout_width="24dp" android:layout_height="24dp" android:layout_gravity="center" android:src="@drawable/ic_cat_chair" app:tint="?android:attr/textColorPrimary" />
+                    </androidx.cardview.widget.CardView>
+                    <TextView android:id="@+id/tv_cat_chair" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Chair" android:textSize="12sp" android:textColor="?android:attr/textColorSecondary"/>
+                </LinearLayout>
+
+                <LinearLayout android:id="@+id/layout_cat_table" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:orientation="vertical" android:clickable="true" android:focusable="true">
+                    <androidx.cardview.widget.CardView android:id="@+id/cv_cat_table" android:layout_width="56dp" android:layout_height="56dp" app:cardCornerRadius="28dp" app:cardElevation="0dp" app:cardBackgroundColor="?attr/colorSurfaceVariant">
+                        <ImageView android:id="@+id/iv_cat_table" android:layout_width="24dp" android:layout_height="24dp" android:layout_gravity="center" android:src="@drawable/ic_cat_table" app:tint="?android:attr/textColorPrimary" />
+                    </androidx.cardview.widget.CardView>
+                    <TextView android:id="@+id/tv_cat_table" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Table" android:textSize="12sp" android:textColor="?android:attr/textColorSecondary"/>
+                </LinearLayout>
+
+                <LinearLayout android:id="@+id/layout_cat_bed" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:orientation="vertical" android:clickable="true" android:focusable="true">
+                    <androidx.cardview.widget.CardView android:id="@+id/cv_cat_bed" android:layout_width="56dp" android:layout_height="56dp" app:cardCornerRadius="28dp" app:cardElevation="0dp" app:cardBackgroundColor="?attr/colorSurfaceVariant">
+                        <ImageView android:id="@+id/iv_cat_bed" android:layout_width="24dp" android:layout_height="24dp" android:layout_gravity="center" android:src="@drawable/ic_cat_bed" app:tint="?android:attr/textColorPrimary" />
+                    </androidx.cardview.widget.CardView>
+                    <TextView android:id="@+id/tv_cat_bed" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Bed" android:textSize="12sp" android:textColor="?android:attr/textColorSecondary"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- New Arrivals Header -->
+            <TextView
+                android:id="@+id/tv_new_arrivals"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:layout_marginStart="24dp"
+                android:text="New Arrivals"
+                android:fontFamily="@font/poppins"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="?android:attr/textColorPrimary"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/layout_quick_categories" />
+
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/shimmer_view_container"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_new_arrivals"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+                        <include layout="@layout/item_product_shimmer" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"/>
+                        <include layout="@layout/item_product_shimmer" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+                        <include layout="@layout/item_product_shimmer" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"/>
+                        <include layout="@layout/item_product_shimmer" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+            </com.facebook.shimmer.ShimmerFrameLayout>
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_products"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
                 android:nestedScrollingEnabled="false"
+                android:visibility="gone"
                 tools:listitem="@layout/item_product"
                 tools:itemCount="4"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layout_search_filter"
+                app:layout_constraintTop_toBottomOf="@id/tv_new_arrivals"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
             <!-- Empty State: muncul saat hasil pencarian kosong -->
@@ -127,7 +323,7 @@
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layout_search_filter">
+                app:layout_constraintTop_toBottomOf="@id/tv_new_arrivals">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -162,7 +358,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layout_search_filter" />
+                app:layout_constraintTop_toBottomOf="@id/tv_new_arrivals" />
 
             <TextView
                 android:id="@+id/tv_error"
@@ -172,7 +368,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layout_search_filter" />
+                app:layout_constraintTop_toBottomOf="@id/tv_new_arrivals" />
 
             <Button
                 android:id="@+id/btn_refresh"

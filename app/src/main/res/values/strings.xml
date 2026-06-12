@@ -107,4 +107,15 @@
     <!-- General -->
     <string name="btn_ok">OK</string>
     <string name="hello_user">Hello, </string>
+
+    <!-- Map Picker -->
+    <string name="map_picker_title">Pick Location</string>
+    <string name="map_search_hint">Search location…</string>
+    <string name="map_my_location">My Location</string>
+    <string name="map_confirm_location">Choose This Location</string>
+    <string name="map_detecting_address">Detecting address…</string>
+    <string name="map_move_pin_hint">Move the map to select location</string>
+    <string name="map_wait_address">Please wait, detecting address…</string>
+    <string name="map_pin_desc">Location pin</string>
+    <string name="map_pick_on_map">📍  Pick on Map</string>
 </resources>

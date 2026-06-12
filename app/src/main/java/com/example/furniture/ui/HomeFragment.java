@@ -63,6 +63,7 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
     private Button btnRefresh;
     private SwipeRefreshLayout swipeRefresh;
     private android.view.View layoutEmptySearch;
+    private com.facebook.shimmer.ShimmerFrameLayout shimmerContainer;
 
     // ─── Data ─────────────────────────────────────────────────────────────────────
 
@@ -101,9 +102,37 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
         executor.shutdown();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (shimmerContainer != null && shimmerContainer.getVisibility() == View.VISIBLE) {
+            shimmerContainer.startShimmer();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        if (shimmerContainer != null) {
+            shimmerContainer.stopShimmer();
+        }
+        super.onPause();
+    }
+
     // ─── Init ────────────────────────────────────────────────────────────────────
 
     private void initView(View view) {
+        TextView tvGreeting = view.findViewById(R.id.tv_greeting);
+        com.example.furniture.utils.SessionManager session = new com.example.furniture.utils.SessionManager(requireContext());
+        if (tvGreeting != null) {
+            String name = session.getUserName();
+            if (name == null || name.trim().isEmpty()) {
+                name = "User";
+            } else {
+                name = name.split(" ")[0]; // First name only
+            }
+            tvGreeting.setText("Hi, " + name + " \uD83D\uDC4B");
+        }
+
         recyclerView  = view.findViewById(R.id.rv_products);
         etSearch      = view.findViewById(R.id.et_search);
         imgFilterCategory = view.findViewById(R.id.img_filter_category);
@@ -113,6 +142,7 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
         btnRefresh    = view.findViewById(R.id.btn_refresh);
         swipeRefresh  = view.findViewById(R.id.swipe_refresh);
         layoutEmptySearch = view.findViewById(R.id.layout_empty_search);
+        shimmerContainer = view.findViewById(R.id.shimmer_view_container);
 
         // Setup Language Selector
         if (btnLanguage != null) {
@@ -142,11 +172,13 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    String query = s.toString().trim();
+                    updateCategorySelection(query); // Update UI indicator immediately
+
                     if (searchRunnable != null) {
                         searchHandler.removeCallbacks(searchRunnable);
                     }
                     searchRunnable = () -> {
-                        String query = s.toString().trim();
                         // Jika kosong, kembali ke keyword default rumahan
                         // Jika ada query, inject keyword rumahan di belakang agar tidak keluar produk fashion
                         if (query.isEmpty()) {
@@ -200,6 +232,21 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
             });
         }
 
+        // Quick Categories and Promo clicks
+        View cvPromo = view.findViewById(R.id.cv_promo);
+        Button btnShopNow = view.findViewById(R.id.btn_shop_now);
+        View layoutCatSofa = view.findViewById(R.id.layout_cat_sofa);
+        View layoutCatChair = view.findViewById(R.id.layout_cat_chair);
+        View layoutCatTable = view.findViewById(R.id.layout_cat_table);
+        View layoutCatBed = view.findViewById(R.id.layout_cat_bed);
+
+        if (cvPromo != null) cvPromo.setOnClickListener(v -> etSearch.setText("Sofa"));
+        if (btnShopNow != null) btnShopNow.setOnClickListener(v -> etSearch.setText("Sofa"));
+        if (layoutCatSofa != null) layoutCatSofa.setOnClickListener(v -> etSearch.setText("Sofa"));
+        if (layoutCatChair != null) layoutCatChair.setOnClickListener(v -> etSearch.setText("Chair"));
+        if (layoutCatTable != null) layoutCatTable.setOnClickListener(v -> etSearch.setText("Table"));
+        if (layoutCatBed != null) layoutCatBed.setOnClickListener(v -> etSearch.setText("Bed"));
+
         // Setup RecyclerView dengan GridLayout 2 kolom
         productAdapter = new ProductAdapter(requireContext(), this);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(requireContext(), 2);
@@ -242,6 +289,60 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
     }
 
     // ─── Load Data ───────────────────────────────────────────────────────────────
+
+    private void updateCategorySelection(String selectedCategory) {
+        View view = getView();
+        if (view == null || !isAdded()) return;
+
+        androidx.cardview.widget.CardView[] cards = {
+            view.findViewById(R.id.cv_cat_sofa),
+            view.findViewById(R.id.cv_cat_chair),
+            view.findViewById(R.id.cv_cat_table),
+            view.findViewById(R.id.cv_cat_bed)
+        };
+        ImageView[] icons = {
+            view.findViewById(R.id.iv_cat_sofa),
+            view.findViewById(R.id.iv_cat_chair),
+            view.findViewById(R.id.iv_cat_table),
+            view.findViewById(R.id.iv_cat_bed)
+        };
+        TextView[] texts = {
+            view.findViewById(R.id.tv_cat_sofa),
+            view.findViewById(R.id.tv_cat_chair),
+            view.findViewById(R.id.tv_cat_table),
+            view.findViewById(R.id.tv_cat_bed)
+        };
+        String[] categories = {"Sofa", "Chair", "Table", "Bed"};
+
+        android.util.TypedValue typedValue = new android.util.TypedValue();
+        requireContext().getTheme().resolveAttribute(android.R.attr.textColorPrimary, typedValue, true);
+        int textColorPrimary = androidx.core.content.ContextCompat.getColor(requireContext(), typedValue.resourceId);
+
+        requireContext().getTheme().resolveAttribute(android.R.attr.textColorSecondary, typedValue, true);
+        int textColorSecondary = androidx.core.content.ContextCompat.getColor(requireContext(), typedValue.resourceId);
+
+        requireContext().getTheme().resolveAttribute(com.google.android.material.R.attr.colorSurfaceVariant, typedValue, true);
+        int colorSurfaceVariant = androidx.core.content.ContextCompat.getColor(requireContext(), typedValue.resourceId);
+
+        int colorActiveBg = android.graphics.Color.parseColor("#212121");
+        int colorActiveIcon = android.graphics.Color.WHITE;
+
+        for (int i = 0; i < categories.length; i++) {
+            if (cards[i] != null && icons[i] != null && texts[i] != null) {
+                if (categories[i].equalsIgnoreCase(selectedCategory)) {
+                    cards[i].setCardBackgroundColor(colorActiveBg);
+                    icons[i].setColorFilter(colorActiveIcon);
+                    texts[i].setTextColor(textColorPrimary);
+                    texts[i].setTypeface(null, android.graphics.Typeface.BOLD);
+                } else {
+                    cards[i].setCardBackgroundColor(colorSurfaceVariant);
+                    icons[i].setColorFilter(textColorPrimary);
+                    texts[i].setTextColor(textColorSecondary);
+                    texts[i].setTypeface(null, android.graphics.Typeface.NORMAL);
+                }
+            }
+        }
+    }
 
     /**
      * Entry point: cek koneksi, lalu pilih sumber data.
@@ -382,13 +483,22 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
     // ─── UI State ────────────────────────────────────────────────────────────────
 
     private void showLoading() {
-        if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
+        if (shimmerContainer != null) {
+            shimmerContainer.setVisibility(View.VISIBLE);
+            shimmerContainer.startShimmer();
+        } else if (progressBar != null) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
         if (tvError != null) tvError.setVisibility(View.GONE);
         if (btnRefresh != null) btnRefresh.setVisibility(View.GONE);
         if (recyclerView != null) recyclerView.setVisibility(View.GONE);
     }
 
     private void hideLoading() {
+        if (shimmerContainer != null) {
+            shimmerContainer.stopShimmer();
+            shimmerContainer.setVisibility(View.GONE);
+        }
         if (progressBar != null) progressBar.setVisibility(View.GONE);
         if (swipeRefresh != null) swipeRefresh.setRefreshing(false);
     }
@@ -411,10 +521,21 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
     // ─── ProductAdapter.OnProductClickListener ───────────────────────────────────
 
     @Override
-    public void onProductClick(Product product) {
+    public void onProductClick(Product product, View sharedImageView) {
         Intent intent = new Intent(requireContext(), DetailActivity.class);
         intent.putExtra(Constants.EXTRA_PRODUCT_ID, product.getProductId());
-        startActivity(intent);
+        
+        if (sharedImageView != null) {
+            androidx.core.app.ActivityOptionsCompat options = 
+                androidx.core.app.ActivityOptionsCompat.makeSceneTransitionAnimation(
+                    requireActivity(), 
+                    sharedImageView, 
+                    "product_image" // transitionName will be expected in DetailActivity
+                );
+            startActivity(intent, options.toBundle());
+        } else {
+            startActivity(intent);
+        }
     }
 
     @Override

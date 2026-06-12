@@ -31,6 +31,10 @@
         </activity>
 
         <activity
+            android:name=".ui.OnboardingActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".ui.MainActivity"
             android:exported="true">
             <!-- Deep Link untuk Bagikan Produk & Cart -->
@@ -73,6 +77,18 @@
         <activity
             android:name=".ui.ReviewActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".ui.MapPickerActivity"
+            android:exported="false"
+            android:hardwareAccelerated="true"
+            android:parentActivityName=".ui.MainActivity" />
+
+        <activity
+            android:name=".ui.OrderTrackingActivity"
+            android:exported="false"
+            android:hardwareAccelerated="true"
+            android:parentActivityName=".ui.CheckoutActivity" />
 
     </application>
 

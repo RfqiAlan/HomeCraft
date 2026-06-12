@@ -14,4 +14,5 @@
     <color name="badge_recommend_bg">#F0F9F0</color>
     <color name="window_background">#FAFAFA</color>
     <color name="category_selected_icon">#FFFFFF</color>
+    <color name="shimmer_bg">#E0E0E0</color>
 </resources>
